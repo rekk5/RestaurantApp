@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kandi/RestaurantPage.dart';
 import 'GenderMetricsPage.dart'; // Import your GenderMetricsPage file here
+import 'Feedback.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -8,7 +10,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Screen'),
+        title: const Text('Home Screen'),
       ),
       body: Center(
         child: Column(
@@ -18,26 +20,25 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 // Navigate to the map screen (Not implemented yet)
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text('Map screen is not implemented yet.'),
                   ),
                 );
               },
-              child: Text('Map'),
+              child: const Text('Map'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Navigate to the database screen (Not implemented yet)
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Database screen is not implemented yet.'),
-                  ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RestaurantPage()),
                 );
               },
-              child: Text('Database'),
+              child: const Text('Database'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Navigate to the GenderMetricsPage
@@ -46,7 +47,18 @@ class HomeScreen extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const GenderMetricsPage()),
                 );
               },
-              child: Text('Profile'),
+              child: const Text('Profile'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the FeedbackPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FeedbackPage()),
+                );
+              },
+              child: const Text('Feedback'),
             ),
           ],
         ),

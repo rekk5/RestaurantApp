@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'LoginPage.dart'; // Import your login page file here
 import 'GenderMetricsPage.dart'; // Import your GenderMetricsPage page file here
 import 'HomeScreen.dart';
+import 'Feedback.dart';
+import 'RestaurantPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +29,10 @@ class MyApp extends StatelessWidget {
         '/gendermetricspage': (context) => const GenderMetricsPage(),
         // HomeScreen route
         '/homescreen': (context) => const HomeScreen(),
+        // Feedback route
+        '/feedback': (context) => const FeedbackPage(),
+        // RestaurantPage route
+        '/RestaurantPage': (context) => RestaurantPage(),
       },
     );
   }
