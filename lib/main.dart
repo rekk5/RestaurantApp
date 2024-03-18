@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         // gendermetricspage route
         '/gendermetricspage': (context) => const GenderMetricsPage(),
         // HomeScreen route
-        '/homescreen': (context) => const HomeScreen(),
+        '/homescreen': (context) => HomeScreen(),
         // Feedback route
         '/feedback': (context) => const FeedbackPage(),
         // RestaurantPage route
