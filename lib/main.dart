@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'LoginPage.dart'; // Import your login page file here
-import 'GenderMetricsPage.dart'; // Import your GenderMetricsPage page file here
-import 'HomeScreen.dart';
-import 'Feedback.dart';
-import 'RestaurantPage.dart';
+import 'gender_metrics_page.dart'; // Import your GenderMetricsPage page file here
+import 'home_screen.dart';
+import 'feed_back.dart';
+import 'restaurant_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,11 +19,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // Set initial route to LoginPage
-      initialRoute: '/login',
+      initialRoute: '/homescreen',
       // Define routes for navigation
       routes: {
-        // LoginPage route
-        '/login': (context) => const LoginPage(),
         // gendermetricspage route
         '/gendermetricspage': (context) => const GenderMetricsPage(),
         // HomeScreen route
