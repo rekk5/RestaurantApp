@@ -24,6 +24,8 @@ class FoodItem{
   String restaurant;
   // restaurant that offers the FoodItem as content of FoodItems may vary in different restaurants.
 
+  bool fullView = false;
+
 
   FoodItem({
     required this.name,
@@ -43,6 +45,26 @@ class FoodItem{
 
   });
 
+  static set view(bool fullView){
+    fullView = fullView;
+  }
+
+  static FoodItem getTestItem(){
+    FoodItem testItem = FoodItem(name: 'Happy Meal',
+      totalCalories: 542,
+      calories: 230.7,
+      protein: 11.5,
+      fat: 12.3,
+      saturatedFat: 4.3,
+      carbohydrates: 17.9,
+      sugar: 3.7,
+      restaurant: 'McDonalds',
+      foodType: 'hamburger',
+      healthRating: 3,
+      weight: (100*542/230.7).ceil()
+      );
+      return testItem;
+  }
 
   static List<FoodItem> getTestMenu(){
     List<FoodItem> testMenu = [];
@@ -117,7 +139,7 @@ class FoodItem{
     testMenu.add(
       FoodItem(name: 'Mini Salad',
       totalCalories: 25,
-      calories: 25/155,
+      calories: (25/1.55).roundToDouble(),
       protein: 1,
       fat: 0.2,
       saturatedFat: 0.1,

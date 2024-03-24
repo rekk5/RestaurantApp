@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 class UserInformation{
 
+  // basic implementation may be subject to change
+
   bool gender;
   double weight;
   double height;
