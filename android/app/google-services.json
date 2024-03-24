@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "954101074159",
+    "project_id": "kandi-project",
+    "storage_bucket": "kandi-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954101074159:android:1eef3d6deb292b8bf5331a",
+        "android_client_info": {
+          "package_name": "com.example.kandi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcd0uT_nB2VIllHN3UEfw5Rj9XDInMWGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
