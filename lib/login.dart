@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'register.dart';
+import 'home_screen.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -18,6 +19,12 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+          if (user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -25,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
         print('Wrong password provided for that user.');
       }
     }
-  } // This closing bracket was missing
+  }
 
   @override
   Widget build(BuildContext context) {
