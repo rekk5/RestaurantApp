@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -32,6 +35,23 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
   double height = 0.0;
   int age = 0;
   String activityLevel = '';
+
+  void saveMetrics() {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        print('No user is signed in.');
+      return;
+    }
+
+    final db = FirebaseFirestore.instance;
+    db.collection('users').doc(userId).set({
+    'gender': selectedGender,
+    'weight': weight,
+    'height': height,
+    'age': age,
+    'activityLevel': activityLevel,
+    }, SetOptions(merge: true));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,14 +169,8 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () {
-                // Handle submission
-                print('Gender: $selectedGender');
-                print('Weight: $weight kg');
-                print('Height: $height cm');
-                print('Age: $age years');
-              },
-              child: const Text('Submit'),
+              onPressed: saveMetrics,
+              child: const Text('Save Metrics'),
             ),
           ],
         ),
