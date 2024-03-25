@@ -1,14 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:kandi/classes/food_item.dart';
 import 'package:kandi/restaurant_page.dart';
 import 'gender_metrics_page.dart'; // Import your GenderMetricsPage file here
 import 'feed_back.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -57,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       'Recommendations',
                       style: TextStyle(
                         color: Colors.black,
@@ -66,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Container(
+                    SizedBox(
                       height: 140,
                       child: ListView.separated(
                         itemCount: testMenu.length,
@@ -105,8 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(height: 15,),
                                   Text(
-                                    testMenu[index].totalCalories.toString() + ' kcal',
-                                    style: TextStyle(
+                                    '${testMenu[index].totalCalories} kcal',
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       color: Color.fromARGB(255, 107, 102, 102)
                                     ),
@@ -139,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Navigate to the database screen
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RestaurantPage()),
+                      MaterialPageRoute(builder: (context) => const RestaurantPage()),
                     );
                   },
                   child: const Text('Database'),
@@ -178,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   height: 400,
                   width: 400,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.blue,
                   ),
                   child: Column(

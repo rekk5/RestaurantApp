@@ -3,6 +3,8 @@ import 'gender_metrics_page.dart'; // Import your GenderMetricsPage page file he
 import 'home_screen.dart';
 import 'feed_back.dart';
 import 'restaurant_page.dart';
+import 'login.dart';
+import 'register.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -29,11 +31,15 @@ class MyApp extends StatelessWidget {
         // gendermetricspage route
         '/gendermetricspage': (context) => const GenderMetricsPage(),
         // HomeScreen route
-        '/homescreen': (context) => HomeScreen(),
+        '/homescreen': (context) => const HomeScreen(),
         // Feedback route
         '/feedback': (context) => const FeedbackPage(),
         // RestaurantPage route
-        '/RestaurantPage': (context) => RestaurantPage(),
+        '/RestaurantPage': (context) => const RestaurantPage(),
+        // LoginPage route
+        '/login': (context) => LoginPage(),
+        // RegisterPage route
+        '/register': (context) => RegisterPage(),
       },
     );
   }
