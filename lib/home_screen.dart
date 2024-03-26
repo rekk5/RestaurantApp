@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:kandi/classes/food_item.dart';
 import 'package:kandi/restaurant_page.dart';
 import 'gender_metrics_page.dart'; // Import your GenderMetricsPage file here

@@ -1,6 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -11,7 +13,17 @@ class FeedbackPage extends StatefulWidget {
 
 class _FeedbackPageState extends State<FeedbackPage> {
   String feedback = '';
-
+  final databaseReference = FirebaseDatabase.instanceFor(
+  app: Firebase.app(),
+  databaseURL: "https://kandi-project-default-rtdb.europe-west1.firebasedatabase.app"
+).ref();
+// Save feedback to Firebase Realtime Database
+    void saveFeedback() {
+    databaseReference.child('feedback').push().set({
+      'feedback': feedback,
+    });
+  }
+// Build the feedback page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,10 +55,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  // Implement submission logic
-                  submitFeedback();
-                },
+                onPressed: saveFeedback,
                 child: const Text('Submit'),
               ),
             ],
@@ -54,16 +63,5 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
       ),
     );
-  }
-
-  void submitFeedback() {
-    // You can implement your submission logic here
-    // For this example, let's just print the feedback
-    print('Feedback: $feedback');
-    //Clear the text field
-    setState(() {
-      feedback = '';
-    });
-    // You can also perform actions like sending the feedback to a server, etc.
   }
 }

@@ -238,7 +238,6 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       activityLevel = 'High';
                     });
                   },
-                child: const Text('High'),
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.resolveWith<Color>(
                     (Set<MaterialState> states) {
@@ -247,6 +246,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                     },
                   ),
                 ),
+                child: const Text('High'),
               ),
             ],
           ),
