@@ -81,7 +81,15 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       selectedGender = 'Male';
                     });
                   },
-                  child: const Text('Male'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (selectedGender == 'Male') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                    },
+                  ),
+                 ),
+                child: const Text('Male'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -89,7 +97,15 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       selectedGender = 'Female';
                     });
                   },
-                  child: const Text('Female'),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (selectedGender == 'Female') return Colors.blue;  // Selected color
+                          return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
+                child: const Text('Female'),
                 ),
               ],
             ),
@@ -147,6 +163,14 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       activityLevel = 'Low';
                     });
                   },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (activityLevel == 'Low') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
                   child: const Text('Low'),
                 ),
                 ElevatedButton(
@@ -155,6 +179,14 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       activityLevel = 'Medium';
                     });
                   },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (activityLevel == 'Medium') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
                   child: const Text('Medium'),
                 ),
                 ElevatedButton(
@@ -163,10 +195,18 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       activityLevel = 'High';
                     });
                   },
-                  child: const Text('High'),
+                child: const Text('High'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (activityLevel == 'High') return Colors.blue;  // Selected color
+                      return Colors.grey;  // Default color
+                    },
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: saveMetrics,

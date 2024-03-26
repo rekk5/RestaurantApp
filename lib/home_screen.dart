@@ -5,7 +5,7 @@ import 'gender_metrics_page.dart'; // Import your GenderMetricsPage file here
 import 'feed_back.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
