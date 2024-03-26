@@ -13,7 +13,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+  //Register which uses firebase authentication to sign up
   Future<void> _register() async {
     try {
       final user = await _auth.createUserWithEmailAndPassword(
@@ -34,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
       print(e);
     }
   }
-
+  // Scaffold for the register page
   @override
   Widget build(BuildContext context) {
     return Scaffold(

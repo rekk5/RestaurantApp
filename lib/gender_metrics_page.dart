@@ -90,6 +90,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
       appBar: AppBar(
         title: const Text('Gender & Metrics'),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -122,6 +123,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                  ),
                 child: const Text('Male'),
                 ),
+
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -140,6 +142,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                 ),
               ],
             ),
+
             const SizedBox(height: 20.0),
             TextField(
               controller: weightController,
@@ -153,6 +156,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                 labelText: 'Weight (kg)',
               ),
             ),
+
             const SizedBox(height: 10.0),
             TextField(
               controller: heightController,
@@ -166,6 +170,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                 labelText: 'Height (cm)',
               ),
             ),
+
             const SizedBox(height: 10.0),
             TextField(
               controller: ageController,
@@ -179,6 +184,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                 labelText: 'Age',
               ),
             ),
+
             const SizedBox(height: 20.0),
             const Text(
               'Select Activity Level:',
@@ -187,6 +193,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             const SizedBox(height: 10.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -207,6 +214,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                   ),
                   child: const Text('Low'),
                 ),
+
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -223,6 +231,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                   ),
                   child: const Text('Medium'),
                 ),
+
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -241,6 +250,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
               ),
             ],
           ),
+          
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: saveMetrics,

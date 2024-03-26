@@ -14,7 +14,7 @@ class _LoginPageState extends State<LoginPage> {
   final _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+  //Login which uses firebase authentication to sign in
   Future<void> _login() async {
     try {
       final user = await _auth.signInWithEmailAndPassword(
@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
-
+  // Scaffold for the login page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
