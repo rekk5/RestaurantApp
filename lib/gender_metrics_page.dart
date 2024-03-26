@@ -36,6 +36,37 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
   int age = 0;
   String activityLevel = '';
 
+  final weightController = TextEditingController();
+  final heightController = TextEditingController();
+  final ageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadMetrics();
+  }
+
+  void loadMetrics() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      print('No user is signed in.');
+      return;
+    }
+
+    final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    setState(() {
+      selectedGender = doc['gender'];
+      weight = doc['weight'];
+      height = doc['height'];
+      age = doc['age'];
+      activityLevel = doc['activityLevel'];
+
+      weightController.text = weight.toString();
+      heightController.text = height.toString();
+      ageController.text = age.toString();
+    });
+  }
+
   void saveMetrics() {
     final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
@@ -81,7 +112,15 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       selectedGender = 'Male';
                     });
                   },
-                  child: const Text('Male'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (selectedGender == 'Male') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                    },
+                  ),
+                 ),
+                child: const Text('Male'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -89,12 +128,21 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       selectedGender = 'Female';
                     });
                   },
-                  child: const Text('Female'),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (selectedGender == 'Female') return Colors.blue;  // Selected color
+                          return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
+                child: const Text('Female'),
                 ),
               ],
             ),
             const SizedBox(height: 20.0),
             TextField(
+              controller: weightController,
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 setState(() {
@@ -107,6 +155,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             ),
             const SizedBox(height: 10.0),
             TextField(
+              controller: heightController,
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 setState(() {
@@ -119,6 +168,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             ),
             const SizedBox(height: 10.0),
             TextField(
+              controller: ageController,
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 setState(() {
@@ -147,6 +197,14 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       activityLevel = 'Low';
                     });
                   },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (activityLevel == 'Low') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
                   child: const Text('Low'),
                 ),
                 ElevatedButton(
@@ -155,6 +213,14 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       activityLevel = 'Medium';
                     });
                   },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (activityLevel == 'Medium') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
                   child: const Text('Medium'),
                 ),
                 ElevatedButton(
@@ -163,10 +229,18 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       activityLevel = 'High';
                     });
                   },
-                  child: const Text('High'),
+                child: const Text('High'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (activityLevel == 'High') return Colors.blue;  // Selected color
+                      return Colors.grey;  // Default color
+                    },
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: saveMetrics,
