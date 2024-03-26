@@ -36,6 +36,37 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
   int age = 0;
   String activityLevel = '';
 
+  final weightController = TextEditingController();
+  final heightController = TextEditingController();
+  final ageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadMetrics();
+  }
+
+  void loadMetrics() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      print('No user is signed in.');
+      return;
+    }
+
+    final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    setState(() {
+      selectedGender = doc['gender'];
+      weight = doc['weight'];
+      height = doc['height'];
+      age = doc['age'];
+      activityLevel = doc['activityLevel'];
+
+      weightController.text = weight.toString();
+      heightController.text = height.toString();
+      ageController.text = age.toString();
+    });
+  }
+
   void saveMetrics() {
     final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
@@ -111,6 +142,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             ),
             const SizedBox(height: 20.0),
             TextField(
+              controller: weightController,
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 setState(() {
@@ -123,6 +155,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             ),
             const SizedBox(height: 10.0),
             TextField(
+              controller: heightController,
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 setState(() {
@@ -135,6 +168,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             ),
             const SizedBox(height: 10.0),
             TextField(
+              controller: ageController,
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 setState(() {
