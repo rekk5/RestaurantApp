@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool recommendedFoodItemClicked = false;
 
-  FoodItem clickedFoodItem = FoodItem.getTestItem();
+  FoodItem clickedFoodItem = FoodItem.getEmptyFoodItem();
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: Stack(
+          alignment: Alignment.center,
           children: [
             Positioned(
               child: Column(
@@ -64,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             if (recommendedFoodItemClicked) ...[
               Positioned(
+                top: 10,
                 child: clickedItemView()
                 )
             ]
@@ -108,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       MaterialPageRoute(builder: (context) => const RestaurantPage()),
                     );
                   },
-                  child: const Text('Database'),
+                  child: const Text('Restaurants'),
                 );
   }
 
@@ -134,8 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       },
       child: Container(
-        height: 400,
-        width: 400,
+        height: 300,
+        width: 300,
         decoration: const BoxDecoration(
           color: Colors.blue,
         ),
@@ -158,6 +160,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Text(
               'carbohydrates ${clickedFoodItem.carbohydrates}g of which sugar ${clickedFoodItem.sugar}g' 
+            ),
+            Text(
+              'Fiber ${clickedFoodItem.fiber}g' 
+            ),
+            Text(
+              'Price ${clickedFoodItem.price}€' 
             ),
           ],
         ),

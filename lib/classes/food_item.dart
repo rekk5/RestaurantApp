@@ -15,7 +15,9 @@ class FoodItem{
   double saturatedFat;
   double carbohydrates;
   double sugar;
+  double fiber;
   String foodType;
+  double price;
 
  // healthRating to be calculated from data of FoodItem and UserInformation
   int healthRating;
@@ -37,15 +39,35 @@ class FoodItem{
     required this.restaurant,
     required this.foodType,
     required this.sugar,
+    required this.fiber,
     this.healthRating = 0,
     this.weight = 100,
-    
+    required this.price,
 
 
   });
 
   static set view(bool fullView){
     fullView = fullView;
+  }
+
+    static FoodItem getEmptyFoodItem(){
+    FoodItem testItem = FoodItem(name: 'Empty FoodItem. If this is displayed it is likely due to a bug in code',
+      totalCalories: 0,
+      calories: 0,
+      protein: 0,
+      fat: 0,
+      saturatedFat: 0,
+      carbohydrates: 0,
+      sugar: 0,
+      restaurant: '',
+      foodType: '',
+      healthRating: 0,
+      weight: 0,
+      price: 0,
+      fiber: 0,
+      );
+      return testItem;
   }
 
   static FoodItem getTestItem(){
@@ -60,7 +82,9 @@ class FoodItem{
       restaurant: 'McDonalds',
       foodType: 'hamburger',
       healthRating: 3,
-      weight: (100*542/230.7).ceil()
+      weight: (100*542/230.7).ceil(),
+      price: 6.95,
+      fiber: 2.3,
       );
       return testItem;
   }
@@ -80,7 +104,9 @@ class FoodItem{
       restaurant: 'McDonalds',
       foodType: 'hamburger',
       healthRating: 3,
-      weight: (100*542/230.7).ceil()
+      weight: (100*542/230.7).ceil(),
+      price: 5.95,
+      fiber: 3.7,
       )
     );
 
@@ -96,7 +122,9 @@ class FoodItem{
       restaurant: 'McDonalds',
       foodType: 'salad',
       healthRating: 1,
-      weight: (100*420/118.3).ceil()
+      weight: (100*420/118.3).ceil(),
+      price: 7.95,
+      fiber: 5.3,
 
       )
     );
@@ -113,7 +141,9 @@ class FoodItem{
       restaurant: 'McDonalds',
       foodType: 'wrap',
       healthRating: 2,
-      weight: (100*459/227).ceil()
+      weight: (100*459/227).ceil(),
+      price: 4.95,
+      fiber: 8.3,
 
       )
     );
@@ -130,7 +160,9 @@ class FoodItem{
       restaurant: 'McDonalds',
       foodType: 'icecream',
       healthRating: 3,
-      weight: (100*373/192).ceil()
+      weight: (100*373/192).ceil(),
+      price: 2.95,
+      fiber: 0.1,
 
       )
     );
@@ -147,8 +179,9 @@ class FoodItem{
       restaurant: 'Hesburger',
       foodType: 'salad',
       healthRating: 0,
-      weight: 155
-
+      weight: 155,
+      price: 3.95,
+      fiber: 3.5,
       )
     );
 
