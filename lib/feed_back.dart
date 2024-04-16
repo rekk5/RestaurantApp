@@ -16,7 +16,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   final databaseReference = FirebaseDatabase.instanceFor(
   app: Firebase.app(),
   databaseURL: "https://kandi-project-default-rtdb.europe-west1.firebasedatabase.app"
-).ref();
+  ).ref();
 // Save feedback to Firebase Realtime Database
     void saveFeedback() {
     databaseReference.child('feedback').push().set({
