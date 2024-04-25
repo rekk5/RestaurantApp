@@ -47,7 +47,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
               alignment: Alignment.center,
               children: [
                 Positioned(
-                  child: _restaurantView()
+                  child: Container(
+                    height: 200,
+                    child: _restaurantView()
+                    )
                 ),
                 if (foodItemClicked) ... [
                   Positioned(
@@ -69,6 +72,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
       scrollDirection: Axis.horizontal, // Make the list scroll horizontally
       itemBuilder: (context, index) {
         return Container(
+          height: 200,
           margin: const EdgeInsets.all(8),
           width: MediaQuery.of(context).size.width, // Set the width to the screen width
           color: Colors.green,

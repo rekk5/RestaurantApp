@@ -76,10 +76,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Positioned(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         _recommendationList(),
-                        const SizedBox(height: 40,),
                         const SizedBox(height: 20),
                         _databaseButton(context),
                         const SizedBox(height: 20),
@@ -188,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Container _recommendationList() {
     return Container(
-      height: 500, // Set the height to a specific value
+      height: 350, // Set the height to a specific value
       child: Column(
         children: [
           const Text(
