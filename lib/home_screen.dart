@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kandi/classes/food_item.dart';
+import 'package:kandi/classes/restaurant.dart';
 import 'package:kandi/restaurant_page.dart';
 import 'gender_metrics_page.dart'; // Import your GenderMetricsPage file here
 import 'feed_back.dart';
@@ -13,7 +14,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // initial info
-  List<FoodItem> testMenu = [];
+  List<Restaurant> restaurants = [];
+  List<FoodItem> topDishes = [];
+
+  
 
   // basic colors for boxes displaying food items. Box color associated with food item healthiness
   List<HSVColor> foodHealthinessColors = [];
@@ -24,8 +28,23 @@ class _HomeScreenState extends State<HomeScreen> {
   HSVColor green = HSVColor.fromColor(Colors.green);
   
 
-  void _getInitialInfo(){
-    testMenu = FoodItem.getTestMenu();
+  @override
+  void initState() {
+    super.initState();
+    _getInitialInfo();
+  }
+
+  Future<void> _getInitialInfo() async {
+    List<Restaurant> fetchedRestaurants = await Restaurant.fetchRestaurants();
+    List<FoodItem> allDishes = [];
+      // Get all dishes from all restaurants
+    for (var restaurant in fetchedRestaurants) {
+      allDishes.addAll(restaurant.menu);
+    }
+    // Sort the dishes based on their health rating in descending order
+    allDishes.sort((a, b) => b.healthRating.compareTo(a.healthRating));
+    // Take the top 5 dishes
+    topDishes = allDishes.take(5).toList();
     foodHealthinessColors.add(green);
     foodHealthinessColors.add(yellow);
     foodHealthinessColors.add(orange);
@@ -35,44 +54,53 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool recommendedFoodItemClicked = false;
 
-  FoodItem clickedFoodItem = FoodItem.getEmptyFoodItem();
+  FoodItem clickedFoodItem = FoodItem.empty();
 
   @override
   Widget build(BuildContext context) {
-    _getInitialInfo();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Screen'),
-      ),
-      body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return FutureBuilder(
+      future: _getInitialInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator(); // Show loading spinner while waiting for data
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}'); // Show error message if there's an error
+        } else {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Home Screen'),
+            ),
+            body: Center(
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  _recommendationList(),
-                  const SizedBox(height: 40,),
-                  _mapButton(context),
-                  const SizedBox(height: 20),
-                  _databaseButton(context),
-                  const SizedBox(height: 20),
-                  _userMetricsButton(context),
-                  const SizedBox(height: 20),
-                  _feedbackButton(context),
+                  Positioned(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _recommendationList(),
+                        const SizedBox(height: 40,),
+                        const SizedBox(height: 20),
+                        _databaseButton(context),
+                        const SizedBox(height: 20),
+                        _userMetricsButton(context),
+                        const SizedBox(height: 20),
+                        _feedbackButton(context),
+                      ],
+                    ),
+                  ),
+                  if (recommendedFoodItemClicked) ...[
+                    Positioned(
+                      top: 10,
+                      child: clickedItemView()
+                      )
+                  ]
                 ],
               ),
             ),
-            if (recommendedFoodItemClicked) ...[
-              Positioned(
-                top: 10,
-                child: clickedItemView()
-                )
-            ]
-          ],
-        ),
-      ),
+          );
+        }
+      },
     );
   }
 
@@ -115,20 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
   }
 
-  ElevatedButton _mapButton(BuildContext context) {
-    return ElevatedButton(
-                  onPressed: () {
-                    // Navigate to the map screen (Not implemented yet)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Map screen is not implemented yet.'),
-                      ),
-                    );
-                  },
-                  child: const Text('Map'),
-                );
-  }
-
   GestureDetector clickedItemView() {
     return GestureDetector(
       onTap: () {
@@ -146,9 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               clickedFoodItem.name
-            ),
-            Text(
-              'Restaurant: ${clickedFoodItem.restaurant}',
             ),
             Text(
               '${clickedFoodItem.calories} kcal',
@@ -175,70 +186,64 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Column _recommendationList() {
-    return Column(
-      children: [
-        const Text(
-          'Recommendations',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w500
-          ),
-        ),
-        const SizedBox(height: 15),
-        SizedBox(
-          height: 140,
-          child: ListView.separated(
-            itemCount: testMenu.length,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(
-              left: 15,
-              right: 15
+  Container _recommendationList() {
+    return Container(
+      height: 500, // Set the height to a specific value
+      child: Column(
+        children: [
+          const Text(
+            'Top Dishes',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.w500
             ),
-            separatorBuilder: (context, index) => const SizedBox(width: 20,),
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    recommendedFoodItemClicked = true;
-                    clickedFoodItem = testMenu[index];
-                  });
-                },
-                child: Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: foodHealthinessColors[testMenu[index].healthRating].toColor(),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Padding(
+          ),
+          const SizedBox(height: 15),
+          Expanded(
+            child: ListView.builder(
+              itemCount: topDishes.length,
+              itemBuilder: (context, index) {
+                FoodItem foodItem = topDishes[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      recommendedFoodItemClicked = true;
+                      clickedFoodItem = foodItem;
+                    });
+                  },
+                  child: Container(
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: foodHealthinessColors[foodItem.healthRating].toColor(),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
                           padding: const EdgeInsets.only(left: 10, right: 10),
                           child: Text(
-                            testMenu[index].name,
+                            foodItem.name,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 15,),
-                      Text(
-                        '${testMenu[index].totalCalories} kcal',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color.fromARGB(255, 107, 102, 102)
-                        ),
-                      )
-                    
-                    ],
+                        const SizedBox(height: 15,),
+                        Text(
+                          '${foodItem.totalCalories} kcal',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color.fromARGB(255, 107, 102, 102)
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        )
-      ],
+                );
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }
