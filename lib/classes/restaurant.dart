@@ -1,75 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kandi/classes/food_item.dart';
 
-class Restaurant{
-  
+class Restaurant {
   String name;
-  String foodChain;
-  String address;
+  String location;
   List<FoodItem> menu;
-  double longitude = 0;
-  double lattutde = 0;
-
-
-
 
   Restaurant({
     required this.name,
-    required this.foodChain,
-    required this.address,
+    required this.location,
     required this.menu,
   });
 
-
-  static Restaurant getTestRestaurant(){
-    Restaurant testRestaurant = Restaurant(
-      name: 'Test Restaurant',
-      foodChain: 'Tests_FoodChain',
-      address: 'Testitie 1',
-      menu: FoodItem.getTestMenu()
-      );
-    return testRestaurant;
+  static Future<Restaurant> fromDocument(DocumentSnapshot doc) async {
+    List<FoodItem> menu = [];
+    for (var menuDoc in (await doc.reference.collection('menu').get()).docs) {
+      DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(menuDoc['dishId']).get();
+      String dishName = dishDoc['name'];
+      double totalCalories = 0;
+      Map<String, dynamic> fineliData = {};
+      for (var fineliId in dishDoc['fineliId']) {
+        DocumentSnapshot fineliDoc = await FirebaseFirestore.instance.collection('fineli_kaikki').doc(fineliId).get();
+        fineliData = fineliDoc.data() as Map<String, dynamic>;
+        double portionSize = double.parse(fineliData['medium portion'].replaceAll(",", "."));
+        totalCalories += (fineliData['calories'] * portionSize) / 100;
+      }
+      menu.add(FoodItem.fromDocument(menuDoc, dishName, totalCalories, fineliData));
+    }
+    return Restaurant(
+      name: doc['name'],
+      location: doc['location'],
+      menu: menu,
+    );
   }
 
-  static List<Restaurant> getTestRestaurantList(){
-    List<Restaurant> restaurantList = [];
-
-    restaurantList.add(Restaurant(
-      name: 'Test Restaurant',
-      foodChain: 'Tests_FoodChain',
-      address: 'Testitie 1',
-      menu: FoodItem.getTestMenu()
-      ));
-
-    restaurantList.add(Restaurant(
-      name: 'Test Restaurant 2',
-      foodChain: 'Tests_FoodChain2',
-      address: 'Testitie 2',
-      menu: FoodItem.getTestMenu()
-      ));
-
-    restaurantList.add(Restaurant(
-      name: 'Test Restaurant 3',
-      foodChain: 'Tests_FoodChain3',
-      address: 'Testitie 3',
-      menu: FoodItem.getTestMenu()
-      ));
-
-    restaurantList.add(Restaurant(
-      name: 'Test Restaurant 4',
-      foodChain: 'Tests_FoodChain4',
-      address: 'Testitie 4',
-      menu: FoodItem.getTestMenu()
-      ));
-
-    restaurantList.add(Restaurant(
-      name: 'Test Restaurant 5',
-      foodChain: 'Tests_FoodChain5',
-      address: 'Testitie 5',
-      menu: FoodItem.getTestMenu()
-      ));
-
-
-    return restaurantList;
+  static Future<List<Restaurant>> fetchRestaurants() async {
+    List<Restaurant> restaurants = [];
+    QuerySnapshot restaurantQuery = await FirebaseFirestore.instance.collection('restaurants').get();
+    for (var restaurantDoc in restaurantQuery.docs) {
+      restaurants.add(await Restaurant.fromDocument(restaurantDoc));
+    }
+    return restaurants;
   }
-  
 }
