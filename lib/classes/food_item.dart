@@ -63,6 +63,27 @@ class FoodItem {
       healthRating: healthRating,
     );
   }
+
+    static FoodItem fromMenuView(String price, String name, double totalCalories, Map<String, dynamic> fineliData) {
+    // Calculate health rating based on calories, protein, and fat
+    int healthRating = calculateHealthRating(totalCalories, (fineliData['protein'] as num).toDouble(), (fineliData['fat'] as num).toDouble());
+  
+    return FoodItem(
+      name: name,
+      totalCalories: totalCalories,
+      calories: (fineliData['calories'] as num).toDouble(),
+      protein: (fineliData['protein'] as num).toDouble(),
+      fat: (fineliData['fat'] as num).toDouble(),
+      saturatedFat: (fineliData['saturated fat'] as num).toDouble(),
+      carbohydrates: (fineliData['carbs'] as num).toDouble(),
+      sugar: (fineliData['sugar'] as num).toDouble(),
+      fiber: (fineliData['fiber'] as num).toDouble(),
+      price: price,
+      weight: double.parse(fineliData['medium portion'].replaceAll(",", ".")),
+      healthRating: healthRating,
+    );
+  }
+  
   
   static int calculateHealthRating(double totalCalories, double protein, double fat) {
     // This is just an example. Adjust the calculation based on your specific requirements.
@@ -103,6 +124,96 @@ class FoodItem {
       }
     }
     return menu;
+  }
+
+  static List<FoodItem> getTestMenu(){
+    List<FoodItem> testMenu = [];
+
+    testMenu.add(
+      FoodItem(name: 'Big Mac',
+      totalCalories: 542,
+      calories: 230.7,
+      protein: 11.5,
+      fat: 12.3,
+      saturatedFat: 4.3,
+      carbohydrates: 17.9,
+      sugar: 3.7,
+      healthRating: 3,
+      weight: (100*542/230.7),
+      price: '5.95',
+      fiber: 3.7,
+      )
+    );
+
+    testMenu.add(
+      FoodItem(name: 'Fiesta Chicken Salad',
+      totalCalories: 420,
+      calories: 118.3,
+      protein: 6.5,
+      fat: 7.6,
+      saturatedFat: 1.9,
+      carbohydrates: 5.9,
+      sugar: 1.7,
+      healthRating: 1,
+      weight: (100*420/118.3),
+      price: '7.95',
+      fiber: 5.3,
+
+      )
+    );
+
+    testMenu.add(
+      FoodItem(name: 'Classic McWrap Veggie',
+      totalCalories: 459,
+      calories: 227,
+      protein: 11,
+      fat: 11,
+      saturatedFat: 1.2,
+      carbohydrates: 22,
+      sugar: 1.6,
+      healthRating: 2,
+      weight: (100*459/227),
+      price: '4.95',
+      fiber: 8.3,
+
+      )
+    );
+
+    testMenu.add(
+      FoodItem(name: 'Chocolate Sundae Mix',
+      totalCalories: 373,
+      calories: 192,
+      protein: 3.4,
+      fat: 5,
+      saturatedFat: 3.7,
+      carbohydrates: 34,
+      sugar: 32,
+      healthRating: 3,
+      weight: (100*373/192),
+      price: '2.95',
+      fiber: 0.1,
+
+      )
+    );
+
+    testMenu.add(
+      FoodItem(name: 'Mini Salad',
+      totalCalories: 25,
+      calories: (25/1.55).roundToDouble(),
+      protein: 1,
+      fat: 0.2,
+      saturatedFat: 0.1,
+      carbohydrates: 2.1,
+      sugar: 2,
+      healthRating: 0,
+      weight: 155,
+      price: '3.95',
+      fiber: 3.5,
+      )
+    );
+
+
+    return testMenu;
   }
   
 }

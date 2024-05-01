@@ -35,12 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _getInitialInfo() async {
-    List<Restaurant> fetchedRestaurants = await Restaurant.fetchRestaurants();
-    List<FoodItem> allDishes = [];
+    //List<Restaurant> fetchedRestaurants = await Restaurant.fetchRestaurants();
+    List<FoodItem> allDishes = FoodItem.getTestMenu();
       // Get all dishes from all restaurants
-    for (var restaurant in fetchedRestaurants) {
-      allDishes.addAll(restaurant.menu);
-    }
+    // for (var restaurant in fetchedRestaurants) {
+    //   allDishes.addAll(restaurant.menu);
+    // }
     // Sort the dishes based on their health rating in descending order
     allDishes.sort((a, b) => b.healthRating.compareTo(a.healthRating));
     // Take the top 5 dishes

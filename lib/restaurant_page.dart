@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:kandi/classes/food_item.dart';
+import 'package:kandi/classes/menu_item.dart';
 import 'package:kandi/classes/restaurant.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RestaurantPage extends StatefulWidget {
    const RestaurantPage({super.key});
@@ -10,12 +13,19 @@ class RestaurantPage extends StatefulWidget {
 }
 
 class _RestaurantPageState extends State<RestaurantPage> {
-    List<Restaurant> restaurants = [];
+
+  List<Restaurant> restaurants =[];
+
+  late Future<List<Restaurant>> restaurantFuture;
+  
+
+    
 
     @override
       void initState() {
         super.initState();
-      _getInitialInfo();
+        restaurantFuture = _getInitialInfo();
+
     }
 
     Future<List<Restaurant>> _getInitialInfo() async {
@@ -23,10 +33,19 @@ class _RestaurantPageState extends State<RestaurantPage> {
       return restaurants;
     }
 
+    
 
+  
   // a f
+  
   bool foodItemClicked = false;
   FoodItem clickedFoodItem = FoodItem.empty();
+
+  bool menuCLicked = false;
+  int clickedMenuIndex = 0;
+
+  List<MenuItem> clickedMenu = [];
+
  
   @override
   Widget build(BuildContext context) {
@@ -35,7 +54,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
         title: const Text('Restaurants'),
       ),
       body: FutureBuilder<List<Restaurant>>(
-        future: _getInitialInfo(),
+        future: restaurantFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -48,16 +67,23 @@ class _RestaurantPageState extends State<RestaurantPage> {
               children: [
                 Positioned(
                   child: Container(
-                    height: 200,
+                    //height: 200,
                     child: _restaurantView()
                     )
                 ),
+                if (menuCLicked) ... [
+                  Positioned(
+                    top: 10,
+                    child: _restaurantFullMenuView(context)
+                  )
+                ],
                 if (foodItemClicked) ... [
                   Positioned(
                     top: 10,
                     child: clickedItemView()
                   )
-                ]
+                ],
+                
               ],
             );
           }
@@ -66,26 +92,134 @@ class _RestaurantPageState extends State<RestaurantPage> {
     );
   }
 
+  Container _restaurantFullMenuView(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width - 20,
+      color: Colors.white,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${restaurants[clickedMenuIndex].name} menu'),
+                // Container(
+                //   height: 20,
+                //   width: 20,
+                //   decoration: BoxDecoration(
+                //     color: Colors.black
+                    
+                //   ),
+                // ),
+                IconButton(
+                  onPressed: (){
+                    setState(() {
+                      menuCLicked = false;
+                    });
+                  },
+                  icon: Icon(Icons.close)
+                ),
+            
+            
+              ],
+            ),
+          ),
+          SizedBox(height: 25,),
+          Expanded(
+            child: ListView.builder(
+              itemCount: restaurants[clickedMenuIndex].menuView.length,
+              scrollDirection: Axis.vertical,
+              itemBuilder: (menuContext, menuIndex) {
+                return GestureDetector(
+                  onTap: () async {
+                    FoodItem foodfoodItemToSet = await getClickedFoodItemFromFirebase(restaurants[clickedMenuIndex].menuView[menuIndex].name, restaurants[clickedMenuIndex].menuView[menuIndex].price, restaurants[clickedMenuIndex].menuView[menuIndex].dishId);
+                    
+                    setState(() {
+                      foodItemClicked = true;
+                      // clickedFoodItem = restaurants[index].menu[menuIndex];
+                      clickedFoodItem = foodfoodItemToSet;
+                      
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(8),
+                    height: 100,
+                    width: 200,
+                    color: Colors.red,
+                    child: Column(
+                      children: [
+                        Text(
+                          restaurants[clickedMenuIndex].menuView[menuIndex].name
+                        ),
+                        Text(
+                          'Price ${restaurants[clickedMenuIndex].menuView[menuIndex].price}€' 
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   ListView _restaurantView() {
     return ListView.builder(
       itemCount: restaurants.length,
-      scrollDirection: Axis.horizontal, // Make the list scroll horizontally
+      scrollDirection: Axis.vertical, // Make the list scroll horizontally
       itemBuilder: (context, index) {
         return Container(
-          height: 200,
-          margin: const EdgeInsets.all(8),
-          width: MediaQuery.of(context).size.width, // Set the width to the screen width
+          alignment: Alignment.topLeft,
+          height: 170,
+          margin: const EdgeInsets.all(8),// Set the width to the screen width
           color: Colors.green,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${restaurants[index].name}  |  ${restaurants[index].location}'
-                ),
-                Expanded(
-                  child: _restaurantMenu(index),
+                Text('Best Dishes'),
+                Container(
+                  height: 130,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Container(
+                              alignment: Alignment.topLeft,
+                              width: 80,
+                              child: Text(
+                                '${restaurants[index].name} \n${restaurants[index].location}'
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: (){
+                                setState(() {
+                                  menuCLicked = !menuCLicked;
+                                  clickedMenuIndex = index;
+                                });
+                              },
+                              style: ButtonStyle(
+                                
+                              ),
+                              child: Text('Menu')
+                              ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: _restaurantMenu(index),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -97,14 +231,18 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   ListView _restaurantMenu(int index) {
     return ListView.builder(
-      itemCount: restaurants[index].menu.length,
+      itemCount: restaurants[index].topDishes.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (menuContext, menuIndex) {
         return GestureDetector(
-          onTap: () {
+          onTap: () async {
+            FoodItem foodfoodItemToSet = await getClickedFoodItemFromFirebase(restaurants[index].topDishes[menuIndex].name, restaurants[index].topDishes[menuIndex].price, restaurants[index].topDishes[menuIndex].dishId);
+            
             setState(() {
               foodItemClicked = true;
-              clickedFoodItem = restaurants[index].menu[menuIndex];
+              // clickedFoodItem = restaurants[index].menu[menuIndex];
+              clickedFoodItem = foodfoodItemToSet;
+              
             });
           },
           child: Container(
@@ -114,14 +252,20 @@ class _RestaurantPageState extends State<RestaurantPage> {
             color: Colors.red,
             child: Column(
               children: [
+                // Text(
+                //   restaurants[index].menu[menuIndex].name
+                // ),
+                // Text(
+                //   '${restaurants[index].menu[menuIndex].totalCalories} kcal'
+                // ),
+                // Text(
+                //   'Price ${restaurants[index].menu[menuIndex].price}€' 
+                // ),
                 Text(
-                  restaurants[index].menu[menuIndex].name
+                  restaurants[index].topDishes[menuIndex].name
                 ),
                 Text(
-                  '${restaurants[index].menu[menuIndex].totalCalories} kcal'
-                ),
-                Text(
-                  'Price ${restaurants[index].menu[menuIndex].price}€' 
+                  'Price ${restaurants[index].topDishes[menuIndex].price}€' 
                 ),
               ],
             ),
@@ -174,5 +318,31 @@ class _RestaurantPageState extends State<RestaurantPage> {
       ),
     );
   }
+
+  
+
+  Future<FoodItem> getClickedFoodItemFromFirebase(String dishName, String price, String dishId) async {
+    DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(dishId).get();
+    // String dishName = dishDoc['name'];
+    // print(dishName);
+    double totalCalories = 0;
+    Map<String, dynamic> fineliData = {};
+    for (var fineliId in dishDoc['fineliId']) {
+      DocumentSnapshot fineliDoc = await FirebaseFirestore.instance.collection('fineli_kaikki').doc(fineliId).get();
+      fineliData = fineliDoc.data() as Map<String, dynamic>;
+      double portionSize = double.parse(fineliData['medium portion'].replaceAll(",", "."));
+      totalCalories += (fineliData['calories'] * portionSize) / 100;
+    }
+
+    return FoodItem.fromMenuView(price, dishName, totalCalories, fineliData);
+  }
+
+  // Future<List<MenuItem>> getClickedMenu(String restaurantName) async{
+  //   List<MenuItem> menuItems = [];
+    
+  //   return menuItems;
+  // }
+
+
 
 }
