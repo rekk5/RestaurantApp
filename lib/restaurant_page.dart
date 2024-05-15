@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kandi/classes/food_item.dart';
@@ -134,7 +135,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
               itemBuilder: (menuContext, menuIndex) {
                 return GestureDetector(
                   onTap: () async {
-                    FoodItem foodfoodItemToSet = await getClickedFoodItemFromFirebase(restaurants[clickedMenuIndex].menuView[menuIndex].name, restaurants[clickedMenuIndex].menuView[menuIndex].price, restaurants[clickedMenuIndex].menuView[menuIndex].dishId);
+                    FoodItem foodfoodItemToSet = await FoodItem.getClickedFoodItemFromFirebase2(restaurants[clickedMenuIndex].menuView[menuIndex].name, restaurants[clickedMenuIndex].menuView[menuIndex].price, restaurants[clickedMenuIndex].menuView[menuIndex].dishId);
                     
                     setState(() {
                       foodItemClicked = true;
@@ -182,7 +183,12 @@ class _RestaurantPageState extends State<RestaurantPage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text('Best Dishes'),
+                Row(
+                  children: [
+                    SizedBox(width: 150, child: Text('${restaurants[index].name}')),
+                    Text('Best Dishes'),
+                  ],
+                ),
                 Container(
                   height: 130,
                   width: MediaQuery.of(context).size.width,
@@ -196,8 +202,17 @@ class _RestaurantPageState extends State<RestaurantPage> {
                             Container(
                               alignment: Alignment.topLeft,
                               width: 80,
-                              child: Text(
-                                '${restaurants[index].name} \n${restaurants[index].location}'
+                              child: Column(
+                                children: [
+                                  
+                                  
+                                  Text(
+                                    '${restaurants[index].location}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             ElevatedButton(
@@ -236,7 +251,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
       itemBuilder: (menuContext, menuIndex) {
         return GestureDetector(
           onTap: () async {
-            FoodItem foodfoodItemToSet = await getClickedFoodItemFromFirebase(restaurants[index].topDishes[menuIndex].name, restaurants[index].topDishes[menuIndex].price, restaurants[index].topDishes[menuIndex].dishId);
+            FoodItem foodfoodItemToSet = await FoodItem.getClickedFoodItemFromFirebase2(restaurants[index].topDishes[menuIndex].name, restaurants[index].topDishes[menuIndex].price, restaurants[index].topDishes[menuIndex].dishId);
             
             setState(() {
               foodItemClicked = true;
@@ -311,6 +326,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
             Text(
               'Price ${clickedFoodItem.price}€' 
             ),
+            Text(
+              'Nutri-Score ${clickedFoodItem.nutriScore}' 
+            ),
             
           ],
         ),
@@ -321,21 +339,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   
 
-  Future<FoodItem> getClickedFoodItemFromFirebase(String dishName, String price, String dishId) async {
-    DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(dishId).get();
-    // String dishName = dishDoc['name'];
-    // print(dishName);
-    double totalCalories = 0;
-    Map<String, dynamic> fineliData = {};
-    for (var fineliId in dishDoc['fineliId']) {
-      DocumentSnapshot fineliDoc = await FirebaseFirestore.instance.collection('fineli_kaikki').doc(fineliId).get();
-      fineliData = fineliDoc.data() as Map<String, dynamic>;
-      double portionSize = double.parse(fineliData['medium portion'].replaceAll(",", "."));
-      totalCalories += (fineliData['calories'] * portionSize) / 100;
-    }
 
-    return FoodItem.fromMenuView(price, dishName, totalCalories, fineliData);
-  }
 
   // Future<List<MenuItem>> getClickedMenu(String restaurantName) async{
   //   List<MenuItem> menuItems = [];

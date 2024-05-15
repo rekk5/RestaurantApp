@@ -14,6 +14,7 @@ class FoodItem {
   String price;
   int healthRating;
   bool fullView = false;
+  String nutriScore;
 
   FoodItem.empty()
       : name = '',
@@ -27,7 +28,8 @@ class FoodItem {
         sugar = 0.0,
         fiber = 0.0,
         price = "0,0",
-        healthRating = 0;
+        healthRating = 0,
+        nutriScore = 'C';
     
   FoodItem({
     required this.name,
@@ -42,6 +44,8 @@ class FoodItem {
     this.healthRating = 0,
     this.weight = 100,
     required this.price,
+    required this.nutriScore
+
   });
 
   static FoodItem fromDocument(DocumentSnapshot doc, String name, double totalCalories, Map<String, dynamic> fineliData) {
@@ -61,6 +65,7 @@ class FoodItem {
       price: doc['price'],
       weight: double.parse(fineliData['medium portion'].replaceAll(",", ".")),
       healthRating: healthRating,
+      nutriScore: 'C'
     );
   }
 
@@ -81,6 +86,7 @@ class FoodItem {
       price: price,
       weight: double.parse(fineliData['medium portion'].replaceAll(",", ".")),
       healthRating: healthRating,
+      nutriScore: 'C',
     );
   }
   
@@ -126,91 +132,130 @@ class FoodItem {
     return menu;
   }
 
+  static Future<FoodItem> getClickedFoodItemFromFirebase(String dishName, String price, String dishId) async {
+    DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(dishId).get();
+    // String dishName = dishDoc['name'];
+    // print(dishName);
+    double totalCalories = 0;
+    Map<String, dynamic> fineliData = {};
+    for (var fineliId in dishDoc['fineliId']) {
+      DocumentSnapshot fineliDoc = await FirebaseFirestore.instance.collection('fineli_kaikki').doc(fineliId).get();
+      fineliData = fineliDoc.data() as Map<String, dynamic>;
+      double portionSize = double.parse(fineliData['medium portion'].replaceAll(",", "."));
+      totalCalories += (fineliData['calories'] * portionSize) / 100;
+    }
+
+    return FoodItem.fromMenuView(price, dishName, totalCalories, fineliData);
+  }
+
+  static Future<FoodItem> getClickedFoodItemFromFirebase2(String dishName, String price, String dishId) async {
+    DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(dishId).get();
+    // String dishName = dishDoc['name'];
+    // print(dishName);
+    double totalCalories = double.parse(dishDoc['calories']) *  double.parse(dishDoc['weight'])/100;
+    
+    return FoodItem(
+      name: dishName,
+      totalCalories: totalCalories,
+      calories: double.parse(dishDoc['calories']),
+      protein: double.parse(dishDoc['protein']),
+      fat: double.parse(dishDoc['fat']),
+      saturatedFat: double.parse(dishDoc['saturated fat']),
+      carbohydrates: double.parse(dishDoc['carbs']),
+      sugar: double.parse(dishDoc['sugar']),
+      fiber: double.parse(dishDoc['fiber']),
+      price: price,
+      weight: double.parse(dishDoc['weight']),
+      healthRating: 0,
+      nutriScore: dishDoc['nutriscore'],
+    );
+  }
+
   static List<FoodItem> getTestMenu(){
     List<FoodItem> testMenu = [];
 
-    testMenu.add(
-      FoodItem(name: 'Big Mac',
-      totalCalories: 542,
-      calories: 230.7,
-      protein: 11.5,
-      fat: 12.3,
-      saturatedFat: 4.3,
-      carbohydrates: 17.9,
-      sugar: 3.7,
-      healthRating: 3,
-      weight: (100*542/230.7),
-      price: '5.95',
-      fiber: 3.7,
-      )
-    );
+    // testMenu.add(
+    //   FoodItem(name: 'Big Mac',
+    //   totalCalories: 542,
+    //   calories: 230.7,
+    //   protein: 11.5,
+    //   fat: 12.3,
+    //   saturatedFat: 4.3,
+    //   carbohydrates: 17.9,
+    //   sugar: 3.7,
+    //   healthRating: 3,
+    //   weight: (100*542/230.7),
+    //   price: '5.95',
+    //   fiber: 3.7,
+    //   )
+    // );
 
-    testMenu.add(
-      FoodItem(name: 'Fiesta Chicken Salad',
-      totalCalories: 420,
-      calories: 118.3,
-      protein: 6.5,
-      fat: 7.6,
-      saturatedFat: 1.9,
-      carbohydrates: 5.9,
-      sugar: 1.7,
-      healthRating: 1,
-      weight: (100*420/118.3),
-      price: '7.95',
-      fiber: 5.3,
+    // testMenu.add(
+    //   FoodItem(name: 'Fiesta Chicken Salad',
+    //   totalCalories: 420,
+    //   calories: 118.3,
+    //   protein: 6.5,
+    //   fat: 7.6,
+    //   saturatedFat: 1.9,
+    //   carbohydrates: 5.9,
+    //   sugar: 1.7,
+    //   healthRating: 1,
+    //   weight: (100*420/118.3),
+    //   price: '7.95',
+    //   fiber: 5.3,
 
-      )
-    );
+    //   )
+    // );
 
-    testMenu.add(
-      FoodItem(name: 'Classic McWrap Veggie',
-      totalCalories: 459,
-      calories: 227,
-      protein: 11,
-      fat: 11,
-      saturatedFat: 1.2,
-      carbohydrates: 22,
-      sugar: 1.6,
-      healthRating: 2,
-      weight: (100*459/227),
-      price: '4.95',
-      fiber: 8.3,
+    // testMenu.add(
+    //   FoodItem(name: 'Classic McWrap Veggie',
+    //   totalCalories: 459,
+    //   calories: 227,
+    //   protein: 11,
+    //   fat: 11,
+    //   saturatedFat: 1.2,
+    //   carbohydrates: 22,
+    //   sugar: 1.6,
+    //   healthRating: 2,
+    //   weight: (100*459/227),
+    //   price: '4.95',
+    //   fiber: 8.3,
 
-      )
-    );
+    //   )
+    // );
 
-    testMenu.add(
-      FoodItem(name: 'Chocolate Sundae Mix',
-      totalCalories: 373,
-      calories: 192,
-      protein: 3.4,
-      fat: 5,
-      saturatedFat: 3.7,
-      carbohydrates: 34,
-      sugar: 32,
-      healthRating: 3,
-      weight: (100*373/192),
-      price: '2.95',
-      fiber: 0.1,
+    // testMenu.add(
+    //   FoodItem(name: 'Chocolate Sundae Mix',
+    //   totalCalories: 373,
+    //   calories: 192,
+    //   protein: 3.4,
+    //   fat: 5,
+    //   saturatedFat: 3.7,
+    //   carbohydrates: 34,
+    //   sugar: 32,
+    //   healthRating: 3,
+    //   weight: (100*373/192),
+    //   price: '2.95',
+    //   fiber: 0.1,
 
-      )
-    );
+    //   )
+    // );
 
-    testMenu.add(
-      FoodItem(name: 'Mini Salad',
-      totalCalories: 25,
-      calories: (25/1.55).roundToDouble(),
-      protein: 1,
-      fat: 0.2,
-      saturatedFat: 0.1,
-      carbohydrates: 2.1,
-      sugar: 2,
-      healthRating: 0,
-      weight: 155,
-      price: '3.95',
-      fiber: 3.5,
-      )
-    );
+    // testMenu.add(
+    //   FoodItem(name: 'Mini Salad',
+    //   totalCalories: 25,
+    //   calories: (25/1.55).roundToDouble(),
+    //   protein: 1,
+    //   fat: 0.2,
+    //   saturatedFat: 0.1,
+    //   carbohydrates: 2.1,
+    //   sugar: 2,
+    //   healthRating: 0,
+    //   weight: 155,
+    //   price: '3.95',
+    //   fiber: 3.5,
+    //   )
+    // );
 
 
     return testMenu;

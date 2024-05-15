@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kandi/classes/food_item.dart';
+import 'package:kandi/classes/menu_item.dart';
+import 'package:kandi/classes/recommendation.dart';
 import 'package:kandi/classes/restaurant.dart';
 import 'package:kandi/restaurant_page.dart';
 import 'gender_metrics_page.dart'; // Import your GenderMetricsPage file here
@@ -17,7 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Restaurant> restaurants = [];
   List<FoodItem> topDishes = [];
 
+  late Future<Recommendation> recommendationFuture;
   
+  late Recommendation recommendation;
 
   // basic colors for boxes displaying food items. Box color associated with food item healthiness
   List<HSVColor> foodHealthinessColors = [];
@@ -31,12 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _getInitialInfo();
+    recommendationFuture = _getInitialInfo();
   }
 
-  Future<void> _getInitialInfo() async {
+  Future<Recommendation> _getInitialInfo() async {
     //List<Restaurant> fetchedRestaurants = await Restaurant.fetchRestaurants();
     List<FoodItem> allDishes = FoodItem.getTestMenu();
+  
       // Get all dishes from all restaurants
     // for (var restaurant in fetchedRestaurants) {
     //   allDishes.addAll(restaurant.menu);
@@ -49,7 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
     foodHealthinessColors.add(yellow);
     foodHealthinessColors.add(orange);
     foodHealthinessColors.add(red);
-    
+
+    recommendation = await Recommendation.getRecommendations();
+
+    return recommendation;
   }
 
   bool recommendedFoodItemClicked = false;
@@ -59,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _getInitialInfo(),
+      future: recommendationFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Show loading spinner while waiting for data
@@ -178,6 +186,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               'Price ${clickedFoodItem.price}€' 
             ),
+            Text(
+              'Nutri-Score: ${clickedFoodItem.nutriScore}' 
+            ),
           ],
         ),
       
@@ -185,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Container _recommendationList() {
+ Container _recommendationList() {
     return Container(
       height: 350, // Set the height to a specific value
       child: Column(
@@ -201,21 +212,22 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 15),
           Expanded(
             child: ListView.builder(
-              itemCount: topDishes.length,
+              itemCount: recommendation.recommededItems.length,
               itemBuilder: (context, index) {
-                FoodItem foodItem = topDishes[index];
+                MenuItem menuItem = recommendation.recommededItems[index];
                 return GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                    FoodItem foodItemToSet = await FoodItem.getClickedFoodItemFromFirebase2(menuItem.name, menuItem.price, menuItem.dishId);
                     setState(() {
                       recommendedFoodItemClicked = true;
-                      clickedFoodItem = foodItem;
+                      clickedFoodItem = foodItemToSet;
                     });
                   },
                   child: Container(
                     width: 100,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: foodHealthinessColors[foodItem.healthRating].toColor(),
+                      color: Colors.green,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -223,12 +235,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 10, right: 10),
                           child: Text(
-                            foodItem.name,
+                            menuItem.name,
                           ),
                         ),
                         const SizedBox(height: 15,),
                         Text(
-                          '${foodItem.totalCalories} kcal',
+                          '${double.parse(recommendation.calories[index]).round()} kcal' ,
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color.fromARGB(255, 107, 102, 102)
@@ -246,3 +258,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

@@ -57,6 +57,10 @@ Food types currently not stored on databse. Might be smart to do in the future t
     allFoodTypes.add(FoodType(id: 9, name: 'Vegetables'));
     allFoodTypes.add(FoodType(id: 10, name: 'Soup'));
     allFoodTypes.add(FoodType(id: 11, name: 'Bread'));
+    allFoodTypes.add(FoodType(id: 12, name: 'Salad'));
+    allFoodTypes.add(FoodType(id: 13, name: 'Pizza'));
+    allFoodTypes.add(FoodType(id: 14, name: 'Burger'));
+    allFoodTypes.add(FoodType(id: 15, name: 'Dessert'));
 
 
     return allFoodTypes;

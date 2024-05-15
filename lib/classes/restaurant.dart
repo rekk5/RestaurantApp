@@ -38,7 +38,7 @@ class Restaurant {
     List<MenuItem> topDishes = [];
 
     for (var menuDoc in (await doc.reference.collection('menu').get()).docs) {
-      menuItems.add(MenuItem(name: menuDoc['dishId'], price: menuDoc['price'], dishId: menuDoc['dishId']));
+      menuItems.add(MenuItem(name: menuDoc['name'], price: menuDoc['price'], dishId: menuDoc['dishId']));
      }
 
     for (var menuDoc in (await doc.reference.collection('best_dishes').get()).docs) {

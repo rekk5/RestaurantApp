@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // Set initial route to LoginPage
-      initialRoute: '/login',
+      initialRoute: '/homescreen',
       // Define routes for navigation
       routes: {
         // gendermetricspage route

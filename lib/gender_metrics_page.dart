@@ -280,7 +280,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
 
 
   List<int> getFoodPreferenceList(){
-    List<int> foodPreferenceList = List.filled(12, 0);
+    List<int> foodPreferenceList = List.filled(foodTypes.length, 0);
     for(FoodType food in likedFoodTypes){
       foodPreferenceList[food.id] = 1;
     }
