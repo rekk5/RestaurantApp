@@ -132,21 +132,21 @@ class FoodItem {
     return menu;
   }
 
-  static Future<FoodItem> getClickedFoodItemFromFirebase(String dishName, String price, String dishId) async {
-    DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(dishId).get();
-    // String dishName = dishDoc['name'];
-    // print(dishName);
-    double totalCalories = 0;
-    Map<String, dynamic> fineliData = {};
-    for (var fineliId in dishDoc['fineliId']) {
-      DocumentSnapshot fineliDoc = await FirebaseFirestore.instance.collection('fineli_kaikki').doc(fineliId).get();
-      fineliData = fineliDoc.data() as Map<String, dynamic>;
-      double portionSize = double.parse(fineliData['medium portion'].replaceAll(",", "."));
-      totalCalories += (fineliData['calories'] * portionSize) / 100;
-    }
+  // static Future<FoodItem> getClickedFoodItemFromFirebase(String dishName, String price, String dishId) async {
+  //   DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(dishId).get();
+  //   // String dishName = dishDoc['name'];
+  //   // print(dishName);
+  //   double totalCalories = 0;
+  //   Map<String, dynamic> fineliData = {};
+  //   for (var fineliId in dishDoc['fineliId']) {
+  //     DocumentSnapshot fineliDoc = await FirebaseFirestore.instance.collection('fineli_kaikki').doc(fineliId).get();
+  //     fineliData = fineliDoc.data() as Map<String, dynamic>;
+  //     double portionSize = double.parse(fineliData['medium portion'].replaceAll(",", "."));
+  //     totalCalories += (fineliData['calories'] * portionSize) / 100;
+  //   }
 
-    return FoodItem.fromMenuView(price, dishName, totalCalories, fineliData);
-  }
+  //   return FoodItem.fromMenuView(price, dishName, totalCalories, fineliData);
+  // }
 
   static Future<FoodItem> getClickedFoodItemFromFirebase2(String dishName, String price, String dishId) async {
     DocumentSnapshot dishDoc = await FirebaseFirestore.instance.collection('dishes').doc(dishId).get();

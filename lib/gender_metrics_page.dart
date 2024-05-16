@@ -307,6 +307,9 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             keyboardType: TextInputType.number,
             onChanged: (value) {
               setState(() {
+                if (value == ""){
+                  value = "0";
+                }
                 age = int.parse(value);
               });
             },
@@ -322,6 +325,9 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             keyboardType: TextInputType.number,
             onChanged: (value) {
               setState(() {
+                if (value == ""){
+                  value = "0.0";
+                }
                 height = double.parse(value);
               });
             },
@@ -337,6 +343,9 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
             keyboardType: TextInputType.number,
             onChanged: (value) {
               setState(() {
+                if (value == ""){
+                  value = "0.0";
+                }
                 weight = double.parse(value);
               });
             },
