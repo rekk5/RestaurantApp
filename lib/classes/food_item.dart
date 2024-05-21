@@ -15,6 +15,8 @@ class FoodItem {
   int healthRating;
   bool fullView = false;
   String nutriScore;
+  String restaurant ;
+
 
   FoodItem.empty()
       : name = '',
@@ -29,7 +31,8 @@ class FoodItem {
         fiber = 0.0,
         price = "0,0",
         healthRating = 0,
-        nutriScore = 'C';
+        nutriScore = 'C',
+        restaurant = "";
     
   FoodItem({
     required this.name,
@@ -44,9 +47,14 @@ class FoodItem {
     this.healthRating = 0,
     this.weight = 100,
     required this.price,
-    required this.nutriScore
+    required this.nutriScore,
+    this.restaurant = ""
 
   });
+
+  set item_restaurant(String restaurant){
+    this.restaurant = restaurant;
+  }
 
   static FoodItem fromDocument(DocumentSnapshot doc, String name, double totalCalories, Map<String, dynamic> fineliData) {
     // Calculate health rating based on calories, protein, and fat

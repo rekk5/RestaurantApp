@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         children: [
           const Text(
-            'Top Dishes',
+            'Top Dishes For You',
             style: TextStyle(
               color: Colors.black,
               fontSize: 20,
@@ -212,41 +212,55 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 15),
           Expanded(
             child: ListView.builder(
-              itemCount: recommendation.recommededItems.length,
+              itemCount: recommendation.recommendedItemsFull.length,
               itemBuilder: (context, index) {
-                MenuItem menuItem = recommendation.recommededItems[index];
+                FoodItem menuItem = recommendation.recommendedItemsFull[index];
                 return GestureDetector(
                   onTap: () async {
-                    FoodItem foodItemToSet = await FoodItem.getClickedFoodItemFromFirebase2(menuItem.name, menuItem.price, menuItem.dishId);
+                  //  FoodItem foodItemToSet = await FoodItem.getClickedFoodItemFromFirebase2(menuItem.name, menuItem.price, menuItem.dishId);
+                  FoodItem foodItemToSet = menuItem;
                     setState(() {
                       recommendedFoodItemClicked = true;
                       clickedFoodItem = foodItemToSet;
                     });
                   },
-                  child: Container(
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.green,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10, right: 10),
-                          child: Text(
-                            menuItem.name,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Container(
+                      width: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.green,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4, right: 4),
+                            child: Text(
+                              menuItem.name,
+                            ),
                           ),
-                        ),
+                          Text(
+                            recommendation.recommendedItemsFull[index].restaurant ,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              
+                            ),
+                          ),
+                          
+                          
+                          Text(
+                            '${recommendation.recommendedItemsFull[index].calories.round()} kcal' ,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 107, 102, 102)
+                            ),
+                          )
+                        ,
                         const SizedBox(height: 15,),
-                        Text(
-                          '${double.parse(recommendation.calories[index]).round()} kcal' ,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color.fromARGB(255, 107, 102, 102)
-                          ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );

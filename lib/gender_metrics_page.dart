@@ -51,6 +51,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
   double height = 0.0;
   int age = 0;
   String activityLevel = '';
+  String userClass = '';
 
   final weightController = TextEditingController();
   final heightController = TextEditingController();
@@ -126,6 +127,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
     'age': age,
     'activityLevel': activityLevel,
     'foodPreference': getFoodPreferenceList(),
+    'userClass': classifyUser(height, weight, age, selectedGender, activityLevel)
     }, SetOptions(merge: true));
   }
 
@@ -394,5 +396,23 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
               ),
             ],
           );
+  }
+
+  String classifyUser(double height, double weight, int age, String gender, String activityLevel){
+    double heightMeters = height/100;
+    double BMI = weight/(heightMeters * heightMeters);
+    if (BMI < 18.5){
+      return "Underweight";
+    }
+    if (BMI >= 30){
+      return "Obese";
+    }
+    if (BMI >= 25){
+      return "Overweight";
+    }
+    if (activityLevel == "High"){
+      return "High Activity";
+    }
+    return "Normal";
   }
 }
