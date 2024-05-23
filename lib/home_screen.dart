@@ -60,21 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return recommendation;
   }
 
+  bool showInfo = false;
+
   bool recommendedFoodItemClicked = false;
 
   FoodItem clickedFoodItem = FoodItem.empty();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: recommendationFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Show loading spinner while waiting for data
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}'); // Show error message if there's an error
-        } else {
-          return Scaffold(
+    return Scaffold(
             appBar: AppBar(
               title: const Text('Home Screen'),
             ),
@@ -86,7 +80,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        _recommendationList(),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _infoButton(context),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: const Text(
+                                    'Top Dishes For You',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500
+                                    ),
+                                  ),
+                                ),
+                                _refreshButton(context)
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            FutureBuilder(
+                              future: recommendationFuture,
+                              builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return SizedBox(height: 320, child: const Center(child: CircularProgressIndicator()));
+                                  } else if (snapshot.hasError) {
+                                    return Center(child: Text('Error: ${snapshot.error}'));
+                                  } else {
+                                  return  _recommendationList();
+                                  }
+                              }
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 20),
                         _databaseButton(context),
                         const SizedBox(height: 20),
@@ -96,6 +124,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
+                   if (showInfo) ...[
+                    Positioned(
+                      top: 10,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            showInfo = !showInfo;
+                          });
+                        },
+                        child: Container(
+                          height: 250,
+                          width: 250,
+                          color: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Recommended dishes are based on your user profile information and sorted by Nutri-Score to promote healthy eating. After changing food preferences, use the refresh button to get improved recommendations."
+                            ),
+                          ),
+                        ),
+                      )
+                      )
+                  ],
                   if (recommendedFoodItemClicked) ...[
                     Positioned(
                       top: 10,
@@ -106,9 +157,31 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           );
-        }
-      },
-    );
+
+  }
+
+      IconButton _infoButton(BuildContext context) {
+    return IconButton(
+                  onPressed: () {
+                    // Navigate to the FeedbackPage
+                    setState(() {
+                      showInfo = !showInfo;
+                    });
+                  },
+                  icon: Icon(Icons.info_outline),
+                );
+  }
+
+    IconButton _refreshButton(BuildContext context) {
+    return IconButton(
+                  onPressed: () {
+                    // Navigate to the FeedbackPage
+                    setState(() {
+                      recommendationFuture = _getInitialInfo();
+                    });
+                  },
+                  icon: Icon(Icons.refresh),
+                );
   }
 
   ElevatedButton _feedbackButton(BuildContext context) {
@@ -198,18 +271,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
  Container _recommendationList() {
     return Container(
-      height: 350, // Set the height to a specific value
+      height: 320, // Set the height to a specific value
       child: Column(
         children: [
-          const Text(
-            'Top Dishes For You',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w500
-            ),
-          ),
-          const SizedBox(height: 15),
           Expanded(
             child: ListView.builder(
               itemCount: recommendation.recommendedItemsFull.length,

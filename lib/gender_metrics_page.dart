@@ -143,6 +143,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
+
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
@@ -224,60 +225,116 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
 
   Row _activityLevelSelector() {
     return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    activityLevel = 'Low';
-                  });
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                      if (activityLevel == 'Low') return Colors.blue;  // Selected color
-                      return Colors.grey;  // Default color
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        activityLevel = 'Very Low';
+                      });
                     },
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (activityLevel == 'Very Low') return Colors.blue;  // Selected color
+                          return Colors.grey;  // Default color
+                        },
+                      ),
+                    ),
+                    child: const Text('Very Low'),
                   ),
                 ),
-                child: const Text('Low'),
-              ),
-
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    activityLevel = 'Medium';
-                  });
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                      if (activityLevel == 'Medium') return Colors.blue;  // Selected color
-                      return Colors.grey;  // Default color
+      
+                Flexible(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        activityLevel = 'Low';
+                      });
                     },
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (activityLevel == 'Low') return Colors.blue;  // Selected color
+                          return Colors.grey;  // Default color
+                        },
+                      ),
+                    ),
+                    child: const Text('Low'),
                   ),
                 ),
-                child: const Text('Medium'),
-              ),
-
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    activityLevel = 'High';
-                  });
-                },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
-                    if (activityLevel == 'High') return Colors.blue;  // Selected color
-                    return Colors.grey;  // Default color
-                  },
+      
+                Flexible(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        activityLevel = 'Medium';
+                      });
+                    },
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (activityLevel == 'Medium') return Colors.blue;  // Selected color
+                          return Colors.grey;  // Default color
+                        },
+                      ),
+                    ),
+                    child: const Text('Medium'),
+                  ),
+                ),
+      
+                Flexible(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        activityLevel = 'High';
+                      });
+                    },
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (activityLevel == 'High') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
+                  child: const Text('High'),
+                                ),
+                ),
+      
+              Flexible(
+                flex: 1,
+                child: ElevatedButton(
+                  
+                    onPressed: () {
+                      setState(() {
+                        activityLevel = 'Very High';
+                      });
+                    },
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (activityLevel == 'Very High') return Colors.blue;  // Selected color
+                        return Colors.grey;  // Default color
+                      },
+                    ),
+                  ),
+                  child: const Text('Very High'),
                 ),
               ),
-              child: const Text('High'),
-            ),
-          ],
-        );
+            ],
+          );
+  
   }
 
 
@@ -410,7 +467,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
     if (BMI >= 25){
       return "Overweight";
     }
-    if (activityLevel == "High"){
+    if (activityLevel == "Very High"){
       return "High Activity";
     }
     return "Normal";

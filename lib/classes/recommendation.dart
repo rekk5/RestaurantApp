@@ -30,6 +30,8 @@ class Recommendation{
     //   recommendedMenu.add(MenuItem(name: menuDoc['name'], price: menuDoc['price'], dishId: menuDoc['dishId']));
     //   calories.add(menuDoc['calories']);
     // }
+    likedFoodTypes = [];
+    dislikedFoodTypes = {};
     final userId = FirebaseAuth.instance.currentUser?.uid;
     final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     String? userClass = doc['userClass'];
@@ -47,25 +49,90 @@ class Recommendation{
     String recommendedCollection = getCollectionNameForUserClass(userClass);
     print(recommendedCollection);
     List<FoodItem> recommendedMenu = [];
-    QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).where("food_types", arrayContainsAny: likedFoodTypes).orderBy('nutriscore_int').get();
-    print("end");
-    for (var document in recommendationQuery.docs){
-      Set<String> dishFoodTypes = Set.from(document['food_types']);
-      if (dishFoodTypes.intersection(dislikedFoodTypes).isEmpty){
-        FoodItem itemToSet = (FoodItem(name: document['name'], totalCalories: double.parse(document['calories']), calories: double.parse(document['calories']), protein: double.parse(document['protein']), fat: double.parse(document['fat']), saturatedFat: double.parse(document['saturated fat']), carbohydrates: double.parse(document['carbs']), sugar: double.parse(document['sugar']), fiber: double.parse(document['fiber']), price: '2', nutriScore: (document['nutriscore'])));
-        print('inRestaurants');
-        itemToSet.item_restaurant = document['inRestaurants'][0];
-        recommendedMenu.add(itemToSet);
-      }
+    if (likedFoodTypes.isEmpty){
+      QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).orderBy('nutriscore_int').get();
+      for (var document in recommendationQuery.docs){
+        Set<String> dishFoodTypes = Set.from(document['food_types']);
+        if (dishFoodTypes.intersection(dislikedFoodTypes).isEmpty){
+          FoodItem itemToSet = (FoodItem(name: document['name'], totalCalories: double.parse(document['calories']), calories: double.parse(document['calories']), protein: double.parse(document['protein']), fat: double.parse(document['fat']), saturatedFat: double.parse(document['saturated fat']), carbohydrates: double.parse(document['carbs']), sugar: double.parse(document['sugar']), fiber: double.parse(document['fiber']), price: "no price", nutriScore: (document['nutriscore'])));
+          print('inRestaurants');
+          List<String> possibleRestaurants = List.from(document['inRestaurants']);
       
+          if (possibleRestaurants.isEmpty){
+            itemToSet.item_restaurant = "not in restaurant";
+          }
+          else{
+            itemToSet.item_restaurant = document['inRestaurants'][0];
+            itemToSet.price =  document['prices'][0];
+          }
+          recommendedMenu.add(itemToSet);
+        }
+        
+    
+      }
+      Recommendation recommendation = Recommendation(recommendedItemsFull: recommendedMenu);
+      return recommendation;
     }
-    print('3');
+    else {
+      print(likedFoodTypes.length);
+      QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).where("food_types", arrayContainsAny: likedFoodTypes).orderBy('nutriscore_int').get();
+  print("end");
+  for (var document in recommendationQuery.docs){
+    Set<String> dishFoodTypes = Set.from(document['food_types']);
+    if (dishFoodTypes.intersection(dislikedFoodTypes).isEmpty){
+      FoodItem itemToSet = (FoodItem(name: document['name'], totalCalories: double.parse(document['calories']), calories: double.parse(document['calories']), protein: double.parse(document['protein']), fat: double.parse(document['fat']), saturatedFat: double.parse(document['saturated fat']), carbohydrates: double.parse(document['carbs']), sugar: double.parse(document['sugar']), fiber: double.parse(document['fiber']), price: "no price", nutriScore: (document['nutriscore'])));
+      print('inRestaurants');
+      List<String> possibleRestaurants = List.from(document['inRestaurants']);
+  
+      if (possibleRestaurants.isEmpty){
+        itemToSet.item_restaurant = "not in restaurant";
+      }
+      else{
+        itemToSet.item_restaurant = document['inRestaurants'][0];
+        print(document['nutriscore_int']);
+        itemToSet.price =  document['prices'][0];
+      }
+      recommendedMenu.add(itemToSet);
+    }
+    
+  }
+  print('3');
+  
+  if (recommendedMenu.length < 4 && recommendedCollection != "average"){
+   
+    QuerySnapshot secondRecommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection('average').where("food_types", arrayContainsAny: likedFoodTypes).orderBy('nutriscore_int').get();
+    
+    for (var document in secondRecommendationQuery.docs){
+      if (recommendedMenu.length < 4){
+        Set<String> dishFoodTypes = Set.from(document['food_types']);
+        if (dishFoodTypes.intersection(dislikedFoodTypes).isEmpty){
 
-
-
-    //Recommendation recommendation = Recommendation(recommededItems: recommendedMenu, calories: calories);
-    Recommendation recommendation = Recommendation(recommendedItemsFull: recommendedMenu);
-    return recommendation;
+          FoodItem itemToSet = (FoodItem(name: document['name'], totalCalories: double.parse(document['calories']), calories: double.parse(document['calories']), protein: double.parse(document['protein']), fat: double.parse(document['fat']), saturatedFat: double.parse(document['saturated fat']), carbohydrates: double.parse(document['carbs']), sugar: double.parse(document['sugar']), fiber: double.parse(document['fiber']), price: "no price", nutriScore: (document['nutriscore'])));
+          print('inRestaurants');
+          List<String> possibleRestaurants = List.from(document['inRestaurants']);
+          if (possibleRestaurants.isEmpty){
+            itemToSet.item_restaurant = "not in restaurant";
+          }
+          else{
+            itemToSet.item_restaurant = document['inRestaurants'][0];
+            itemToSet.price =  document['prices'][0];
+          }
+          List<String> names = [];
+          for (FoodItem item in recommendedMenu){
+            names.add(item.name);
+          }
+          if (!(names.contains(itemToSet.name))){
+          recommendedMenu.add(itemToSet);
+          }
+        }
+      }
+    }
+  }
+  
+  //Recommendation recommendation = Recommendation(recommededItems: recommendedMenu, calories: calories);
+  Recommendation recommendation = Recommendation(recommendedItemsFull: recommendedMenu);
+  return recommendation;
+}
   }
 
   static String getCollectionNameForUserClass(String? userClass){
