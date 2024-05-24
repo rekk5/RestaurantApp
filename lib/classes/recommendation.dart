@@ -91,6 +91,7 @@ class Recommendation{
         itemToSet.item_restaurant = document['inRestaurants'][0];
         print(document['nutriscore_int']);
         itemToSet.price =  document['prices'][0];
+        itemToSet.weight = double.parse(document['weight']);
       }
       recommendedMenu.add(itemToSet);
     }

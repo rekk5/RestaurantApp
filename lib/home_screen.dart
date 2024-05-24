@@ -231,36 +231,48 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       },
       child: Container(
-        height: 300,
+        height: 400,
         width: 300,
         decoration: const BoxDecoration(
-          color: Colors.blue,
+          color: Color.fromARGB(255, 224, 223, 189),
         ),
         child: Column(
           children: [
             Text(
-              clickedFoodItem.name
+              clickedFoodItem.name,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
             ),
             Text(
-              '${clickedFoodItem.calories} kcal',
+              clickedFoodItem.restaurant
+            ),
+
+            SizedBox(height: 10,),
+            Text('per 100 grams', style: TextStyle(fontSize: 10),),
+            Text(
+              //'${clickedFoodItem.calories} kcal',
+              '${clickedFoodItem.calories.toStringAsFixed(1)} kcal'
             ),
             Text(
-              'protein ${clickedFoodItem.protein}'
+              '${clickedFoodItem.protein.toStringAsFixed(1)} grams of Protrein'
             ),
             Text(
-              'fat ${clickedFoodItem.fat}g of which saturates ${clickedFoodItem.saturatedFat}g' 
+              'Fat: ${clickedFoodItem.fat.toStringAsFixed(1)} grams of which saturates ${clickedFoodItem.saturatedFat.toStringAsFixed(1)}g' 
             ),
             Text(
-              'carbohydrates ${clickedFoodItem.carbohydrates}g of which sugar ${clickedFoodItem.sugar}g' 
+              'Carbohydrates: ${clickedFoodItem.carbohydrates.toStringAsFixed(1)}g of which sugar ${clickedFoodItem.sugar.toStringAsFixed(1)}g' 
             ),
             Text(
-              'Fiber ${clickedFoodItem.fiber}g' 
+              'Fiber ${clickedFoodItem.fiber.toStringAsFixed(1)}g' 
             ),
+            Text('Estiamted portion: ${clickedFoodItem.weight}g'),
+            SizedBox(height: 20,),
+            FoodItem.getNutriScoreGraphic(clickedFoodItem.nutriScore),
+            SizedBox(height: 15,),
             Text(
-              'Price ${clickedFoodItem.price}€' 
-            ),
-            Text(
-              'Nutri-Score: ${clickedFoodItem.nutriScore}' 
+              '${clickedFoodItem.price}€' ,
+              style: TextStyle(
+                fontSize: 30
+              ),
             ),
           ],
         ),
