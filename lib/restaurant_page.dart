@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:kandi/classes/food_item.dart';
 import 'package:kandi/classes/menu_item.dart';
 import 'package:kandi/classes/restaurant.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kandi/classes/restaurant_data.dart';
+import 'package:provider/provider.dart';
 
 class RestaurantPage extends StatefulWidget {
    const RestaurantPage({super.key});
@@ -13,31 +12,15 @@ class RestaurantPage extends StatefulWidget {
   State<RestaurantPage> createState() => _RestaurantPageState();
 }
 
-class _RestaurantPageState extends State<RestaurantPage> {
+class _RestaurantPageState extends State<RestaurantPage>  {
 
   List<Restaurant> restaurants =[];
-
-  late Future<List<Restaurant>> restaurantFuture;
-  
-
-    
 
     @override
       void initState() {
         super.initState();
-        restaurantFuture = _getInitialInfo();
-
     }
 
-    Future<List<Restaurant>> _getInitialInfo() async {
-      restaurants = await Restaurant.fetchRestaurants();
-      return restaurants;
-    }
-
-    
-
-  
-  // a f
   
   bool foodItemClicked = false;
   FoodItem clickedFoodItem = FoodItem.empty();
@@ -50,22 +33,18 @@ class _RestaurantPageState extends State<RestaurantPage> {
  
   @override
   Widget build(BuildContext context) {
+    restaurants = Provider.of<RestaurantData>(context).restaurants;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Restaurants'),
       ),
-      body: FutureBuilder<List<Restaurant>>(
-        future: restaurantFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            restaurants = snapshot.data ?? [];
-            return Stack(
+      body:  Stack(
               alignment: Alignment.center,
               children: [
+                if(!Provider.of<RestaurantData>(context).fetched)
+                  const Center(child: CircularProgressIndicator()),
+
                 Positioned(
                   child: Container(
                     //height: 200,
@@ -86,10 +65,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                 ],
                 
               ],
-            );
-          }
-        },
-      ),
+            )
     );
   }
 
@@ -106,28 +82,18 @@ class _RestaurantPageState extends State<RestaurantPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('${restaurants[clickedMenuIndex].name} menu'),
-                // Container(
-                //   height: 20,
-                //   width: 20,
-                //   decoration: BoxDecoration(
-                //     color: Colors.black
-                    
-                //   ),
-                // ),
                 IconButton(
                   onPressed: (){
                     setState(() {
                       menuCLicked = false;
                     });
                   },
-                  icon: Icon(Icons.close)
+                  icon: const Icon(Icons.close)
                 ),
-            
-            
               ],
             ),
           ),
-          SizedBox(height: 25,),
+          const SizedBox(height: 25,),
           Expanded(
             child: ListView.builder(
               itemCount: restaurants[clickedMenuIndex].menuView.length,
@@ -172,12 +138,12 @@ class _RestaurantPageState extends State<RestaurantPage> {
   ListView _restaurantView() {
     return ListView.builder(
       itemCount: restaurants.length,
-      scrollDirection: Axis.vertical, // Make the list scroll horizontally
+      scrollDirection: Axis.vertical, 
       itemBuilder: (context, index) {
         return Container(
           alignment: Alignment.topLeft,
           height: 170,
-          margin: const EdgeInsets.all(8),// Set the width to the screen width
+          margin: const EdgeInsets.all(8),
           color: Colors.green,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -185,11 +151,11 @@ class _RestaurantPageState extends State<RestaurantPage> {
               children: [
                 Row(
                   children: [
-                    SizedBox(width: 150, child: Text('${restaurants[index].name}')),
-                    Text('Best Dishes'),
+                    SizedBox(width: 150, child: Text(restaurants[index].name)),
+                    const Text('Best Dishes'),
                   ],
                 ),
-                Container(
+                SizedBox(
                   height: 130,
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -204,11 +170,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                               width: 80,
                               child: Column(
                                 children: [
-                                  
-                                  
+
                                   Text(
-                                    '${restaurants[index].location}',
-                                    style: TextStyle(
+                                    restaurants[index].location,
+                                    style: const TextStyle(
                                       fontSize: 12,
                                     ),
                                   ),
@@ -222,10 +187,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                                   clickedMenuIndex = index;
                                 });
                               },
-                              style: ButtonStyle(
+                              style: const ButtonStyle(
                                 
                               ),
-                              child: Text('Menu')
+                              child: const Text('Menu')
                               ),
                           ],
                         ),
@@ -255,7 +220,6 @@ class _RestaurantPageState extends State<RestaurantPage> {
             
             setState(() {
               foodItemClicked = true;
-              // clickedFoodItem = restaurants[index].menu[menuIndex];
               clickedFoodItem = foodfoodItemToSet;
               
             });
@@ -267,15 +231,6 @@ class _RestaurantPageState extends State<RestaurantPage> {
             color: Colors.red,
             child: Column(
               children: [
-                // Text(
-                //   restaurants[index].menu[menuIndex].name
-                // ),
-                // Text(
-                //   '${restaurants[index].menu[menuIndex].totalCalories} kcal'
-                // ),
-                // Text(
-                //   'Price ${restaurants[index].menu[menuIndex].price}€' 
-                // ),
                 Text(
                   restaurants[index].topDishes[menuIndex].name
                 ),
@@ -309,15 +264,14 @@ class _RestaurantPageState extends State<RestaurantPage> {
               fit: BoxFit.fitWidth,
               child: Text(
                 clickedFoodItem.name,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
               ),
             ),
             
 
-            SizedBox(height: 10,),
-            Text('per 100 grams', style: TextStyle(fontSize: 10),),
+            const SizedBox(height: 10,),
+            const Text('per 100 grams', style: TextStyle(fontSize: 10),),
             Text(
-              //'${clickedFoodItem.calories} kcal',
               '${clickedFoodItem.calories.toStringAsFixed(1)} kcal'
             ),
             Text(
@@ -332,13 +286,15 @@ class _RestaurantPageState extends State<RestaurantPage> {
             Text(
               'Fiber ${clickedFoodItem.fiber.toStringAsFixed(1)}g' 
             ),
-            Text('Estiamted portion: ${clickedFoodItem.weight}g'),
-            SizedBox(height: 20,),
+            Text(
+              'Estiamted portion: ${clickedFoodItem.weight}g'
+              ),
+            const SizedBox(height: 20,),
             FoodItem.getNutriScoreGraphic(clickedFoodItem.nutriScore),
-            SizedBox(height: 15,),
+            const SizedBox(height: 15,),
             Text(
               '${clickedFoodItem.price}€' ,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 30
               ),
             ),
@@ -348,17 +304,5 @@ class _RestaurantPageState extends State<RestaurantPage> {
       ),
     );
   }
-
-  
-
-
-
-  // Future<List<MenuItem>> getClickedMenu(String restaurantName) async{
-  //   List<MenuItem> menuItems = [];
-    
-  //   return menuItems;
-  // }
-
-
 
 }

@@ -1,14 +1,6 @@
-import 'dart:ffi';
-import 'dart:ui';
-
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:kandi/classes/food_item.dart';
 import 'package:kandi/classes/food_type.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
@@ -59,10 +51,6 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
 
   static List<FoodType> foodTypes = FoodType.getAllFoodTypes();
 
-  static List<FoodType> _smallFoodTypes = [];
-  static List<FoodType> _smallFoodTypes2 = [];
-
-  
 
   final _items = foodTypes.map((foodItem) => MultiSelectItem(foodItem, foodItem.name)).toList();
   
@@ -177,8 +165,8 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
              MultiSelectDialogField<FoodType>(
               items: _items,
               initialValue: likedFoodTypes,
-              title: Text('Food types'),
-              buttonText: Text('Select the food types you like...'),
+              title: const Text('Food types'),
+              buttonText: const Text('Select the food types you like...'),
               selectedColor: Colors.green,
               decoration: BoxDecoration(
                 color: Colors.green.withOpacity(0.1),
@@ -196,8 +184,8 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
               MultiSelectDialogField<FoodType>(
               items: _items,
               initialValue: dislikedFoodTypes,
-              title: Text('Food types'),
-              buttonText: Text('Select the food types you dislike...'), 
+              title: const Text('Food types'),
+              buttonText: const Text('Select the food types you dislike...'), 
               selectedColor: Colors.red,
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.1),
@@ -236,7 +224,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       });
                     },
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                      padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (activityLevel == 'Very Low') return Colors.blue;  // Selected color
@@ -257,7 +245,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       });
                     },
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                      padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (activityLevel == 'Low') return Colors.blue;  // Selected color
@@ -278,7 +266,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       });
                     },
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                      padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (activityLevel == 'Medium') return Colors.blue;  // Selected color
@@ -299,7 +287,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       });
                     },
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                    padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
                         if (activityLevel == 'High') return Colors.blue;  // Selected color
@@ -321,7 +309,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
                       });
                     },
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.resolveWith((states) => EdgeInsets.all(1.0)),
+                    padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
                         if (activityLevel == 'Very High') return Colors.blue;  // Selected color

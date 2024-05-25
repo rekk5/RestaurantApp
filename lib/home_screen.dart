@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kandi/classes/food_item.dart';
-import 'package:kandi/classes/menu_item.dart';
 import 'package:kandi/classes/recommendation.dart';
 import 'package:kandi/classes/restaurant.dart';
 import 'package:kandi/restaurant_page.dart';
@@ -39,21 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<Recommendation> _getInitialInfo() async {
-    //List<Restaurant> fetchedRestaurants = await Restaurant.fetchRestaurants();
-    List<FoodItem> allDishes = FoodItem.getTestMenu();
-  
-      // Get all dishes from all restaurants
-    // for (var restaurant in fetchedRestaurants) {
-    //   allDishes.addAll(restaurant.menu);
-    // }
-    // Sort the dishes based on their health rating in descending order
-    allDishes.sort((a, b) => b.healthRating.compareTo(a.healthRating));
-    // Take the top 5 dishes
-    topDishes = allDishes.take(5).toList();
-    foodHealthinessColors.add(green);
-    foodHealthinessColors.add(yellow);
-    foodHealthinessColors.add(orange);
-    foodHealthinessColors.add(red);
 
     recommendation = await Recommendation.getRecommendations();
 
@@ -86,9 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 _infoButton(context),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: const Text(
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
                                     'Top Dishes For You',
                                     style: TextStyle(
                                       color: Colors.black,
@@ -105,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               future: recommendationFuture,
                               builder: (context, snapshot) {
                                   if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return SizedBox(height: 320, child: const Center(child: CircularProgressIndicator()));
+                                    return const SizedBox(height: 320, child: Center(child: CircularProgressIndicator()));
                                   } else if (snapshot.hasError) {
                                     return Center(child: Text('Error: ${snapshot.error}'));
                                   } else {
@@ -136,9 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           height: 250,
                           width: 250,
-                          color: Colors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          color: Color.fromARGB(255, 124, 209, 248),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text(
                               "Recommended dishes are based on your user profile information and sorted by Nutri-Score to promote healthy eating. After changing food preferences, use the refresh button to get improved recommendations."
                             ),
@@ -168,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       showInfo = !showInfo;
                     });
                   },
-                  icon: Icon(Icons.info_outline),
+                  icon: const Icon(Icons.info_outline),
                 );
   }
 
@@ -180,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       recommendationFuture = _getInitialInfo();
                     });
                   },
-                  icon: Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh),
                 );
   }
 
@@ -240,14 +224,14 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               clickedFoodItem.name,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
             ),
             Text(
               clickedFoodItem.restaurant
             ),
 
-            SizedBox(height: 10,),
-            Text('per 100 grams', style: TextStyle(fontSize: 10),),
+            const SizedBox(height: 10,),
+            const Text('per 100 grams', style: TextStyle(fontSize: 10),),
             Text(
               //'${clickedFoodItem.calories} kcal',
               '${clickedFoodItem.calories.toStringAsFixed(1)} kcal'
@@ -265,12 +249,12 @@ class _HomeScreenState extends State<HomeScreen> {
               'Fiber ${clickedFoodItem.fiber.toStringAsFixed(1)}g' 
             ),
             Text('Estiamted portion: ${clickedFoodItem.weight}g'),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             FoodItem.getNutriScoreGraphic(clickedFoodItem.nutriScore),
-            SizedBox(height: 15,),
+            const SizedBox(height: 15,),
             Text(
               '${clickedFoodItem.price}€' ,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 30
               ),
             ),
@@ -281,8 +265,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
- Container _recommendationList() {
-    return Container(
+ SizedBox _recommendationList() {
+    return SizedBox(
       height: 320, // Set the height to a specific value
       child: Column(
         children: [
@@ -348,4 +332,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
