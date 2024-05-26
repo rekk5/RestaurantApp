@@ -22,22 +22,32 @@ class Recommendation{
     dislikedFoodTypes = {};
     final userId = FirebaseAuth.instance.currentUser?.uid;
     final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    String? userClass = doc['userClass'];
-    for(int index = 0; index < doc['foodPreference'].length; index++){
-        preferences.add(doc['foodPreference'][index]);
-        if(doc['foodPreference'][index] > 0){
-          likedFoodTypes.add(foodTypes[index].name);
+    String? userClass;
+    doc.data().toString().contains('userClass') ? userClass  = doc['userClass'] : "Average";
+
+
+    if (doc.data().toString().contains('foodPreference')){
+      for(int index = 0; index < doc['foodPreference'].length; index++){
+          preferences.add(doc['foodPreference'][index]);
+          if(doc['foodPreference'][index] > 0){
+            likedFoodTypes.add(foodTypes[index].name);
+          }
+          if(doc['foodPreference'][index] < 0){
+            dislikedFoodTypes.add(foodTypes[index].name);
+          }
         }
-        if(doc['foodPreference'][index] < 0){
-          dislikedFoodTypes.add(foodTypes[index].name);
-        }
-      }
+    }
+
 
     String recommendedCollection = getCollectionNameForUserClass(userClass);
     List<FoodItem> recommendedMenu = [];
     if (likedFoodTypes.isEmpty){
       QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).orderBy('nutriscore_int').get();
+      print(recommendedCollection);
       for (var document in recommendationQuery.docs){
+        print(document.id);
+        print(document['name']);
+        print(document['food_types']);
         Set<String> dishFoodTypes = Set.from(document['food_types']);
         if (dishFoodTypes.intersection(dislikedFoodTypes).isEmpty){
           FoodItem itemToSet = (FoodItem(name: document['name'], totalCalories: double.parse(document['calories']), calories: double.parse(document['calories']), protein: double.parse(document['protein']), fat: double.parse(document['fat']), saturatedFat: double.parse(document['saturated fat']), carbohydrates: double.parse(document['carbs']), sugar: double.parse(document['sugar']), fiber: double.parse(document['fiber']), price: "no price", nutriScore: (document['nutriscore'])));

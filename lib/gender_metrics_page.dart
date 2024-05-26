@@ -76,19 +76,20 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
 
     final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     setState(() {
-      selectedGender = doc['gender'];
-      weight = doc['weight'];
-      height = doc['height'];
-      age = doc['age'];
-      activityLevel = doc['activityLevel'];
+      doc.data().toString().contains('gender') ? selectedGender = doc['gender'] : selectedGender = 'not selected';
+      doc.data().toString().contains('weight') ? weight = doc['weight'] : weight = 0.0;
+      doc.data().toString().contains('height') ? height = doc['height'] : height = 0.0;
+      doc.data().toString().contains('age') ? age = doc['age'] : age = 0;
+      doc.data().toString().contains('age') ? activityLevel = doc['activityLevel'] : activityLevel = 'not selected';
 
-      weightController.text = weight.toString();
-      heightController.text = height.toString();
-      ageController.text = age.toString();
+      weight > 0 ? weightController.text = weight.toString() : weightController.text = "";
+      height > 0 ? heightController.text = height.toString() : weightController.text = "";
+      age > 0 ? ageController.text = age.toString() : ageController.text = "";
       // setting food preferences
       likedFoodTypes = [];
       dislikedFoodTypes = [];
-      for(int index = 0; index < doc['foodPreference'].length; index++){
+      if (doc.data().toString().contains('foodPreference')){
+        for(int index = 0; index < doc['foodPreference'].length; index++){
         preferences.add(doc['foodPreference'][index]);
         if(doc['foodPreference'][index] > 0){
           likedFoodTypes.add(foodTypes[index]);
@@ -97,6 +98,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
           dislikedFoodTypes.add(foodTypes[index]);
         }
       }
+    }
     });
   }
 
@@ -458,6 +460,6 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
     if (activityLevel == "Very High"){
       return "High Activity";
     }
-    return "Normal";
+    return "Average";
   }
 }

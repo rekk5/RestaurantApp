@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           height: 250,
                           width: 250,
-                          color: Color.fromARGB(255, 124, 209, 248),
+                          color: const Color.fromARGB(255, 124, 209, 248),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
