@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kandi/classes/restaurant_data.dart';
 import 'package:provider/provider.dart';
@@ -16,9 +17,21 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+  }
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -29,7 +42,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         // Set initial route to LoginPage
-        initialRoute: '/homescreen',
+        initialRoute: user != null ? '/homescreen' : '/login',
         // Define routes for navigation
         routes: {
           // gendermetricspage route

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'register.dart';
 import 'home_screen.dart';
 
@@ -31,6 +32,8 @@ class _LoginPageState extends State<LoginPage> {
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
       }
+    } on PlatformException catch (e){
+      print(e.code);
     }
   }
   // Scaffold for the login page
@@ -40,8 +43,10 @@ class _LoginPageState extends State<LoginPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
+            //logo goes here
+
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
@@ -64,7 +69,20 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
             ),
-            //TODO: viittaus fineliin
+            const SizedBox(height: 100,),
+            const SizedBox(
+              width: 220,
+              child: Text(
+                'Nutritional values shown in this application are approximations based '
+                'on open data provided by Finnish Institute for Health and Welfare ' 
+                '(Terveyden ja hyvinvoinnin latios), Fineli and may not be entirely accuate.', 
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.teal
+                ),
+              ),
+            ),
+            SizedBox(height: 30,)
           ],
         ),
       ),

@@ -7,12 +7,14 @@ class Restaurant {
   String location;
   List<MenuItem> menuView;
   List<MenuItem> topDishes;
+  double rating;
 
   Restaurant({
     required this.name,
     required this.location,
     required this.menuView,
     required this.topDishes,
+    required this.rating,
   });
 
   static Future<Restaurant> fromDocument(DocumentSnapshot doc) async {
@@ -31,6 +33,7 @@ class Restaurant {
     return Restaurant(
       name: doc['name'],
       location: doc['location'],
+      rating: doc['rating'],
       menuView: menuItems,
       topDishes: topDishes,
     );

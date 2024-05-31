@@ -5,29 +5,6 @@ import 'package:kandi/classes/food_type.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 
-
-void main() {
-  runApp(const MyApp());
-}
-
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Gender & Metrics',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const GenderMetricsPage(),
-    );
-  }
-}
-
-
-
 class GenderMetricsPage extends StatefulWidget {
   const GenderMetricsPage({super.key});
 
@@ -36,34 +13,32 @@ class GenderMetricsPage extends StatefulWidget {
 }
 
 
-
 class _GenderMetricsPageState extends State<GenderMetricsPage> {
-  String selectedGender = '';
-  double weight = 0.0;
-  double height = 0.0;
-  int age = 0;
-  String activityLevel = '';
-  String userClass = '';
+  String _selectedGender = '';
+  double _weight = 0.0;
+  double _height = 0.0;
+  int _age = 0;
+  String _activityLevel = '';
+  // String _userClass = ''; 
 
-  final weightController = TextEditingController();
-  final heightController = TextEditingController();
-  final ageController = TextEditingController();
+  final _weightController = TextEditingController();
+  final _heightController = TextEditingController();
+  final _ageController = TextEditingController();
 
-  static List<FoodType> foodTypes = FoodType.getAllFoodTypes();
+  static final List<FoodType> foodTypes = FoodType.getAllFoodTypes();
 
 
   final _items = foodTypes.map((foodItem) => MultiSelectItem(foodItem, foodItem.name)).toList();
   
-  List<FoodType> likedFoodTypes = [];
-  List<FoodType> dislikedFoodTypes = [];
-  List<int> preferences = [];
+  List<FoodType> _likedFoodTypes = [];
+  List<FoodType> _dislikedFoodTypes = [];
+  final List<int> _preferences = [];
 
 
   @override
   void initState() {
+    super.initState();
     loadMetrics();
-
-    
   }
 
 
@@ -73,35 +48,38 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
       print('No user is signed in.');
       return;
     }
-
+    // get user daat from firebase
     final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     setState(() {
-      doc.data().toString().contains('gender') ? selectedGender = doc['gender'] : selectedGender = 'not selected';
-      doc.data().toString().contains('weight') ? weight = doc['weight'] : weight = 0.0;
-      doc.data().toString().contains('height') ? height = doc['height'] : height = 0.0;
-      doc.data().toString().contains('age') ? age = doc['age'] : age = 0;
-      doc.data().toString().contains('age') ? activityLevel = doc['activityLevel'] : activityLevel = 'not selected';
+      // tries to get user metrics, handles null if metric not in firebase
+      doc.data().toString().contains('gender') ? _selectedGender = doc['gender'] : _selectedGender = 'not selected';
+      doc.data().toString().contains('weight') ? _weight = doc['weight'] : _weight = 0.0;
+      doc.data().toString().contains('height') ? _height = doc['height'] : _height = 0.0;
+      doc.data().toString().contains('age') ? _age = doc['age'] : _age = 0;
+      doc.data().toString().contains('age') ? _activityLevel = doc['activityLevel'] : _activityLevel = 'not selected';
 
-      weight > 0 ? weightController.text = weight.toString() : weightController.text = "";
-      height > 0 ? heightController.text = height.toString() : weightController.text = "";
-      age > 0 ? ageController.text = age.toString() : ageController.text = "";
+      //sets metric texts
+      _weight > 0 ? _weightController.text = _weight.toString() : _weightController.text = "";
+      _height > 0 ? _heightController.text = _height.toString() : _weightController.text = "";
+      _age > 0 ? _ageController.text = _age.toString() : _ageController.text = "";
       // setting food preferences
-      likedFoodTypes = [];
-      dislikedFoodTypes = [];
+      // stored in firebase as array where each index has one of 3 values (0 = disliked, 3 = neutral, 5 = liked)
+      _likedFoodTypes = [];
+      _dislikedFoodTypes = [];
       if (doc.data().toString().contains('foodPreference')){
         for(int index = 0; index < doc['foodPreference'].length; index++){
-        preferences.add(doc['foodPreference'][index]);
-        if(doc['foodPreference'][index] > 0){
-          likedFoodTypes.add(foodTypes[index]);
+        _preferences.add(doc['foodPreference'][index]);
+        if(doc['foodPreference'][index] > 4){
+          _likedFoodTypes.add(foodTypes[index]);
         }
-        if(doc['foodPreference'][index] < 0){
-          dislikedFoodTypes.add(foodTypes[index]);
+        if(doc['foodPreference'][index] < 1){
+          _dislikedFoodTypes.add(foodTypes[index]);
         }
       }
     }
     });
   }
-
+  // store new user metrics to firebase
   void saveMetrics() {
     final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
@@ -111,13 +89,13 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
 
     final db = FirebaseFirestore.instance;
     db.collection('users').doc(userId).set({
-    'gender': selectedGender,
-    'weight': weight,
-    'height': height,
-    'age': age,
-    'activityLevel': activityLevel,
-    'foodPreference': getFoodPreferenceList(),
-    'userClass': classifyUser(height, weight, age, selectedGender, activityLevel)
+    'gender': _selectedGender,
+    'weight': _weight,
+    'height': _height,
+    'age': _age,
+    'activityLevel': _activityLevel,
+    'foodPreference': _getFoodPreferenceList(),
+    'userClass': _classifyUser(_height, _weight, _age, _selectedGender, _activityLevel)
     }, SetOptions(merge: true));
   }
 
@@ -125,7 +103,7 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gender & Metrics'),
+        title: const Text('Profile'),
       ),
 
       body: Padding(
@@ -136,13 +114,8 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
 
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Select Gender:',
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _selectGenderText(),
+
               const SizedBox(height: 10.0),
               _genderSelector(),
           
@@ -162,50 +135,13 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
               _activityLevelSelector(),
 
               const SizedBox(height: 10.0),
-
-
-             MultiSelectDialogField<FoodType>(
-              items: _items,
-              initialValue: likedFoodTypes,
-              title: const Text('Food types'),
-              buttonText: const Text('Select the food types you like...'),
-              selectedColor: Colors.green,
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(40)
-              ),
-
-              onConfirm: (results){
-                likedFoodTypes = results;
-              }
-              ),
+             _likedFoodTypesSelector(),
 
               const SizedBox(height: 40.0),
-
-
-              MultiSelectDialogField<FoodType>(
-              items: _items,
-              initialValue: dislikedFoodTypes,
-              title: const Text('Food types'),
-              buttonText: const Text('Select the food types you dislike...'), 
-              selectedColor: Colors.red,
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(40)
-              ),
-
-              onConfirm: (results){
-                dislikedFoodTypes = results;
-              }
-              ),
+              _dislikedFoodTypesSelector(),
             
               const SizedBox(height: 20.0),
-
-
-              ElevatedButton(
-                onPressed: saveMetrics,
-                child: const Text('Save Metrics'),
-              ),
+              _saveMetricsButton(),
             ],
           ),
         ),
@@ -213,239 +149,231 @@ class _GenderMetricsPageState extends State<GenderMetricsPage> {
     );
   }
 
-  Row _activityLevelSelector() {
-    return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Flexible(
-                  flex: 1,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        activityLevel = 'Very Low';
-                      });
-                    },
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (activityLevel == 'Very Low') return Colors.blue;  // Selected color
-                          return Colors.grey;  // Default color
-                        },
-                      ),
-                    ),
-                    child: const Text('Very Low'),
-                  ),
-                ),
-      
-                Flexible(
-                  flex: 1,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        activityLevel = 'Low';
-                      });
-                    },
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (activityLevel == 'Low') return Colors.blue;  // Selected color
-                          return Colors.grey;  // Default color
-                        },
-                      ),
-                    ),
-                    child: const Text('Low'),
-                  ),
-                ),
-      
-                Flexible(
-                  flex: 1,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        activityLevel = 'Medium';
-                      });
-                    },
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (activityLevel == 'Medium') return Colors.blue;  // Selected color
-                          return Colors.grey;  // Default color
-                        },
-                      ),
-                    ),
-                    child: const Text('Medium'),
-                  ),
-                ),
-      
-                Flexible(
-                  flex: 1,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        activityLevel = 'High';
-                      });
-                    },
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        if (activityLevel == 'High') return Colors.blue;  // Selected color
-                        return Colors.grey;  // Default color
-                      },
-                    ),
-                  ),
-                  child: const Text('High'),
-                                ),
-                ),
-      
-              Flexible(
-                flex: 1,
-                child: ElevatedButton(
-                  
-                    onPressed: () {
-                      setState(() {
-                        activityLevel = 'Very High';
-                      });
-                    },
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        if (activityLevel == 'Very High') return Colors.blue;  // Selected color
-                        return Colors.grey;  // Default color
-                      },
-                    ),
-                  ),
-                  child: const Text('Very High'),
-                ),
-              ),
-            ],
-          );
-  
+  Text _selectGenderText() {
+    return const Text(
+      'Select Gender:',
+      style: TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  ElevatedButton _saveMetricsButton() {
+    return ElevatedButton(
+      onPressed: saveMetrics,
+      child: const Text('Save Metrics'),
+    );
+  }
+
+  MultiSelectDialogField<FoodType> _dislikedFoodTypesSelector() {
+    return MultiSelectDialogField<FoodType>(
+      items: _items,
+      initialValue: _dislikedFoodTypes,
+      title: const Text('Food types'),
+      buttonText: const Text('Select the food types you dislike...'), 
+      selectedColor: Colors.red,
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(40)
+      ),
+
+      onConfirm: (results){
+        _dislikedFoodTypes = results;
+      }
+    );
+  }
+
+  MultiSelectDialogField<FoodType> _likedFoodTypesSelector() {
+    return MultiSelectDialogField<FoodType>(
+      items: _items,
+      initialValue: _likedFoodTypes,
+      title: const Text('Food types'),
+      buttonText: const Text('Select the food types you like...'),
+      selectedColor: Colors.green,
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(40)
+      ),
+
+      onConfirm: (results){
+        _likedFoodTypes = results;
+      }
+      );
   }
 
 
-  List<int> getFoodPreferenceList(){
-    List<int> foodPreferenceList = List.filled(foodTypes.length, 0);
-    for(FoodType food in likedFoodTypes){
-      foodPreferenceList[food.id] = 1;
+  Row _activityLevelSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Flexible(
+          flex: 1,
+          child: _setActivityLevelButton('Very Low')
+        ),
+
+        Flexible(
+          flex: 1,
+          child: _setActivityLevelButton('Low')
+        ),
+
+        Flexible(
+          flex: 1,
+          child: _setActivityLevelButton('Medium')
+        ),
+
+        Flexible(
+          flex: 1,
+          child:_setActivityLevelButton('High')
+        ),
+
+        Flexible(
+          flex: 1,
+          child: _setActivityLevelButton('Very High')
+        ),
+      ],
+    );
+  
+  }
+
+  ElevatedButton _setActivityLevelButton(String activityLevelString){
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _activityLevel = activityLevelString;
+        });
+      },
+      style: ButtonStyle(
+        padding: MaterialStateProperty.resolveWith((states) => const EdgeInsets.all(1.0)),
+        backgroundColor: MaterialStateProperty.resolveWith<Color>(
+          (Set<MaterialState> states) {
+            if (_activityLevel == activityLevelString) return Colors.blue;  // Selected button shows different color
+            return Colors.grey;  // Default color
+          },
+        ),
+      ),
+      child: Text(activityLevelString),
+    );
+  }
+
+  Text _activityLevelText() {
+    return const Text(
+      'Select Activity Level:',
+      style: TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  TextField _ageSelector() {
+    return TextField(
+      controller: _ageController,
+      keyboardType: TextInputType.number,
+      onChanged: (value) {
+        setState(() {
+          if (value == ""){
+            value = "0";
+          }
+          _age = int.parse(value);
+        });
+      },
+      decoration: const InputDecoration(
+        labelText: 'Age',
+      ),
+    );
+  }
+
+  TextField _heightSelector() {
+    return TextField(
+      controller: _heightController,
+      keyboardType: TextInputType.number,
+      onChanged: (value) {
+        setState(() {
+          if (value == ""){
+            value = "0.0";
+          }
+          _height = double.parse(value);
+        });
+      },
+      decoration: const InputDecoration(
+        labelText: 'Height (cm)',
+      ),
+    );
+  }
+
+  TextField _weightSelector() {
+    return TextField(
+      controller: _weightController,
+      keyboardType: TextInputType.number,
+      onChanged: (value) {
+        setState(() {
+          if (value == ""){
+            value = "0.0";
+          }
+          _weight = double.parse(value);
+        });
+      },
+      decoration: const InputDecoration(
+        labelText: 'Weight (kg)',
+      ),
+    );
+  }
+
+  Row _genderSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedGender = 'Male';
+            });
+          },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              if (_selectedGender == 'Male') return Colors.blue;  // Selected color
+                return Colors.grey;  // Default color
+            },
+          ),
+          ),
+        child: const Text('Male'),
+        ),
+
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedGender = 'Female';
+            });
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) {
+                if (_selectedGender == 'Female') return Colors.blue;  // Selected color
+                  return Colors.grey;  // Default color
+              },
+            ),
+          ),
+        child: const Text('Female'),
+        ),
+      ],
+    );
+  }
+
+  List<int> _getFoodPreferenceList(){
+    List<int> foodPreferenceList = List.filled(foodTypes.length, 3);
+    for(FoodType food in _likedFoodTypes){
+      foodPreferenceList[food.id] = 5;
     }
-    for(FoodType food in dislikedFoodTypes){
-      foodPreferenceList[food.id] = -1;
+    for(FoodType food in _dislikedFoodTypes){
+      foodPreferenceList[food.id] = 0;
     }
 
     return foodPreferenceList;
   }
 
-  Text _activityLevelText() {
-    return const Text(
-            'Select Activity Level:',
-            style: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-            ),
-          );
-  }
-
-  TextField _ageSelector() {
-    return TextField(
-            controller: ageController,
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                if (value == ""){
-                  value = "0";
-                }
-                age = int.parse(value);
-              });
-            },
-            decoration: const InputDecoration(
-              labelText: 'Age',
-            ),
-          );
-  }
-
-  TextField _heightSelector() {
-    return TextField(
-            controller: heightController,
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                if (value == ""){
-                  value = "0.0";
-                }
-                height = double.parse(value);
-              });
-            },
-            decoration: const InputDecoration(
-              labelText: 'Height (cm)',
-            ),
-          );
-  }
-
-  TextField _weightSelector() {
-    return TextField(
-            controller: weightController,
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                if (value == ""){
-                  value = "0.0";
-                }
-                weight = double.parse(value);
-              });
-            },
-            decoration: const InputDecoration(
-              labelText: 'Weight (kg)',
-            ),
-          );
-  }
-
-  Row _genderSelector() {
-    return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    selectedGender = 'Male';
-                  });
-                },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
-                    if (selectedGender == 'Male') return Colors.blue;  // Selected color
-                      return Colors.grey;  // Default color
-                  },
-                ),
-               ),
-              child: const Text('Male'),
-              ),
-
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    selectedGender = 'Female';
-                  });
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                      if (selectedGender == 'Female') return Colors.blue;  // Selected color
-                        return Colors.grey;  // Default color
-                    },
-                  ),
-                ),
-              child: const Text('Female'),
-              ),
-            ],
-          );
-  }
-
-  String classifyUser(double height, double weight, int age, String gender, String activityLevel){
+  String _classifyUser(double height, double weight, int age, String gender, String activityLevel){
     double heightMeters = height/100;
     double BMI = weight/(heightMeters * heightMeters);
     if (BMI < 18.5){
