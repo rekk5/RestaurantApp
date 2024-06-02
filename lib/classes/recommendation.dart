@@ -1,16 +1,18 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kandi/classes/food_item.dart';
 import 'package:kandi/classes/food_type.dart';
-import 'package:kandi/classes/restaurant.dart';
+
+// recommendations will query extra items from all dishes instedad of the userClass specific collection if userClass specific collection has this amount or fewer recommended dishes 
+const int TOO_FEW_RECOMMENDATIONS = 3;
+// list of all food types
+final List<FoodType> _foodTypes = FoodType.getAllFoodTypes();
+// initialize liked and disliked food typws
+List<String> _likedFoodTypes = [];
+Set<String> _dislikedFoodTypes = {};
+List<int> _preferences = [];
 
 
-final List<FoodType> foodTypes = FoodType.getAllFoodTypes();
-List<String> likedFoodTypes = [];
-Set<String> dislikedFoodTypes = {};
-List<int> preferences = [];
 
 class Recommendation{
   List<FoodItem> recommendedItems;
@@ -20,66 +22,64 @@ class Recommendation{
   });
 
   static Future<Recommendation> getRecommendations() async{
-
+    // restaurant ratings dictionary for selecting the best option for same dish in multiple restaurants
     Map restaurantRatings = {};
-
+    // get restaurant ratings from firebase
     final restaurantsQuery = await FirebaseFirestore.instance.collection('restaurants').get();
     for (DocumentSnapshot restaurantDoc in restaurantsQuery.docs){
       restaurantRatings[restaurantDoc['name']] = restaurantDoc['rating'];
     }
-    print(restaurantRatings);
 
-
-    likedFoodTypes = [];
-    dislikedFoodTypes = {};
+    // get user's liked and disliked food types from firebase 
+    _likedFoodTypes = [];
+    _dislikedFoodTypes = {};
     final userId = FirebaseAuth.instance.currentUser?.uid;
+    //get user data from firebase
     final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    String? userClass;
-    doc.data().toString().contains('userClass') ? userClass  = doc['userClass'] : "Average";
-
 
     if (doc.data().toString().contains('foodPreference')){
       for(int index = 0; index < doc['foodPreference'].length; index++){
-          preferences.add(doc['foodPreference'][index]);
+          _preferences.add(doc['foodPreference'][index]);
           if(doc['foodPreference'][index] > 4){
-            likedFoodTypes.add(foodTypes[index].name);
+            _likedFoodTypes.add(_foodTypes[index].name);
           }
           if(doc['foodPreference'][index] < 1){
-            dislikedFoodTypes.add(foodTypes[index].name);
+            _dislikedFoodTypes.add(_foodTypes[index].name);
           }
         }
     }
 
-
+    // get user class from firebase to choose correct recommended dishes collection
+    String? userClass;
+    doc.data().toString().contains('userClass') ? userClass  = doc['userClass'] : "Average";
     String recommendedCollection = getCollectionNameForUserClass(userClass);
+
+    // initialize recommended items menu
     List<FoodItem> recommendedMenu = [];
-    if (likedFoodTypes.isEmpty){
-      QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).orderBy('nutriscore_int').get();
-      print(recommendedCollection);
-      for (var document in recommendationQuery.docs){
-        print(document.id);
-        print(document['name']);
-        print(document['food_types']);
-        _addRecommendedItemToRecommendationList(document, recommendedMenu, restaurantRatings);
-        
     
+    // if user has not set liked food types recommendations gets all dishes sorted by nutri score and removes ones with food types in _dislikedFoodTypes set
+    if (_likedFoodTypes.isEmpty){
+      QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).orderBy('nutriscore_int').get();
+      for (var document in recommendationQuery.docs){
+        _addRecommendedItemToRecommendationList(document, recommendedMenu, restaurantRatings);
       }
       Recommendation recommendation = Recommendation(recommendedItems: recommendedMenu);
       return recommendation;
     }
+    // if user has liked food types, only gets dishes with at least one of those food types (dishes with both liked and disliked food types will not be removed)
     else {
-      QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).where("food_types", arrayContainsAny: likedFoodTypes).orderBy('nutriscore_int').get();
+      QuerySnapshot recommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection(recommendedCollection).where("food_types", arrayContainsAny: _likedFoodTypes).orderBy('nutriscore_int').get();
       for (var document in recommendationQuery.docs){
         _addRecommendedItemToRecommendationList(document, recommendedMenu, restaurantRatings);
-        
       }
       
-      if (recommendedMenu.length < 4 && recommendedCollection != "average"){
+      // if number of recommendations is too few
+      if (recommendedMenu.length <= TOO_FEW_RECOMMENDATIONS && recommendedCollection != "average"){
       
-        QuerySnapshot secondRecommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection('average').where("food_types", arrayContainsAny: likedFoodTypes).orderBy('nutriscore_int').get();
+        QuerySnapshot secondRecommendationQuery = await FirebaseFirestore.instance.collection('recommendedDishes').doc('types').collection('average').where("food_types", arrayContainsAny: _likedFoodTypes).orderBy('nutriscore_int').get();
         
         for (var document in secondRecommendationQuery.docs){
-          if (recommendedMenu.length < 4){
+          if (recommendedMenu.length <= TOO_FEW_RECOMMENDATIONS){
             _addRecommendedItemToRecommendationList(document, recommendedMenu, restaurantRatings);
           }
         }
@@ -90,20 +90,36 @@ class Recommendation{
     }
   }
   
+  // creates FoodItem from firebase document and chooses the highest rated restaurtant, adds to recommendedMenu (if dish has no disliked food types)
   static void _addRecommendedItemToRecommendationList(DocumentSnapshot document, List<FoodItem> recommendedMenu, Map restaurantRatings){
     Set<String> dishFoodTypes = Set.from(document['food_types']);
-    if (dishFoodTypes.intersection(dislikedFoodTypes).isEmpty){
-      FoodItem itemToSet = (FoodItem(name: document['name'], totalCalories: double.parse(document['calories']), calories: double.parse(document['calories']), protein: double.parse(document['protein']), fat: double.parse(document['fat']), saturatedFat: double.parse(document['saturated fat']), carbohydrates: double.parse(document['carbs']), sugar: double.parse(document['sugar']), fiber: double.parse(document['fiber']), price: "no price", nutriScore: (document['nutriscore'])));
+    if (dishFoodTypes.intersection(_dislikedFoodTypes).isEmpty){
+      FoodItem itemToSet = FoodItem(
+      name: document['name'],
+      totalCalories: double.parse(document['calories']),
+      calories: double.parse(document['calories']),
+      protein: double.parse(document['protein']),
+      fat: double.parse(document['fat']),
+      saturatedFat: double.parse(document['saturated fat']),
+      carbohydrates: double.parse(document['carbs']),
+      sugar: double.parse(document['sugar']),
+      fiber: double.parse(document['fiber']),
+      salt: double.parse(document['salt']),
+      price: "no price",
+      nutriScore: (document['nutriscore'])
+      );
+      itemToSet.weight = double.parse(document['weight']);
       List<String> possibleRestaurants = List.from(document['inRestaurants']);
-  
+
+      // if dish not in any restaurant restaurant field has value "not in restaurant"
       if (possibleRestaurants.isEmpty){
         itemToSet.itemRestaurant = "not in restaurant";
       }
+      // else sets restyaurant and price of the highest rated restaurant
       else{
         int highestRatedIndex = getHighestRatedRestaurantIndex(restaurantRatings, possibleRestaurants);
         itemToSet.itemRestaurant = document['inRestaurants'][highestRatedIndex];
         itemToSet.price =  document['prices'][highestRatedIndex];
-        itemToSet.weight = double.parse(document['weight']);
       }
       recommendedMenu.add(itemToSet);
     }

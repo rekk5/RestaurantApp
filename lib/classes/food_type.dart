@@ -15,32 +15,6 @@ Food types currently not stored on databse. Might be smart to do in the future t
  */
 
 
-  static List<FoodType> getProteinTypes(){
-
-    List<FoodType> proteinTypes = [];
-    proteinTypes.add(FoodType(id: 0, name: 'Poultry'));
-    proteinTypes.add(FoodType(id: 1, name: 'Beef'));
-    proteinTypes.add(FoodType(id: 2, name: 'Pork'));
-    proteinTypes.add(FoodType(id: 3, name: 'Seafood'));
-    proteinTypes.add(FoodType(id: 4, name: 'Plant Based Protein'));
-    proteinTypes.add(FoodType(id: 5, name: 'Game'));
-
-    return proteinTypes;
-  }
-
-  static List<FoodType> getSideDishTypes(){
-
-    List<FoodType> sideTypes = [];
-    sideTypes.add(FoodType(id: 6, name: 'Potatoes'));
-    sideTypes.add(FoodType(id: 7, name: 'Pasta'));
-    sideTypes.add(FoodType(id: 8, name: 'Rice'));
-    sideTypes.add(FoodType(id: 9, name: 'Vegetables'));
-    sideTypes.add(FoodType(id: 10, name: 'Soup'));
-    sideTypes.add(FoodType(id: 11, name: 'Bread'));
-
-    return sideTypes;
-  }
-
   static List<FoodType> getAllFoodTypes(){
 
     List<FoodType> allFoodTypes = [];

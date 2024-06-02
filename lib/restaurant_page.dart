@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kandi/classes/food_item.dart';
-import 'package:kandi/classes/menu_item.dart';
 import 'package:kandi/classes/restaurant.dart';
 import 'package:kandi/classes/restaurant_data.dart';
+import 'package:kandi/nutriscore_graphic.dart';
 import 'package:provider/provider.dart';
-import 'package:rate_in_stars/rate_in_stars.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
@@ -102,7 +101,7 @@ class _RestaurantPageState extends State<RestaurantPage>  {
   GestureDetector _restaurantMenuItemBox(int menuIndex) {
     return GestureDetector(
       onTap: () async {
-        FoodItem foodfoodItemToSet = await FoodItem.getClickedFoodItemFromFirebase2(_restaurants[_clickedMenuIndex].menuView[menuIndex].name, _restaurants[_clickedMenuIndex].menuView[menuIndex].price, _restaurants[_clickedMenuIndex].menuView[menuIndex].dishId);
+        FoodItem foodfoodItemToSet = await FoodItem.getClickedFoodItemFromFirebase(_restaurants[_clickedMenuIndex].menuView[menuIndex].name, _restaurants[_clickedMenuIndex].menuView[menuIndex].price, _restaurants[_clickedMenuIndex].menuView[menuIndex].dishId);
         
         setState(() {
           _foodItemClicked = true;
@@ -251,7 +250,7 @@ class _RestaurantPageState extends State<RestaurantPage>  {
   GestureDetector _bestDishBox(int index, int menuIndex) {
     return GestureDetector(
       onTap: () async {
-        FoodItem foodfoodItemToSet = await FoodItem.getClickedFoodItemFromFirebase2(_restaurants[index].topDishes[menuIndex].name, _restaurants[index].topDishes[menuIndex].price, _restaurants[index].topDishes[menuIndex].dishId);
+        FoodItem foodfoodItemToSet = await FoodItem.getClickedFoodItemFromFirebase(_restaurants[index].topDishes[menuIndex].name, _restaurants[index].topDishes[menuIndex].price, _restaurants[index].topDishes[menuIndex].dishId);
         
         setState(() {
           _foodItemClicked = true;
@@ -320,7 +319,7 @@ class _RestaurantPageState extends State<RestaurantPage>  {
               'Estiamted portion: ${_clickedFoodItem.weight}g'
               ),
             const SizedBox(height: 20,),
-            FoodItem.getNutriScoreGraphic(_clickedFoodItem.nutriScore),
+            getNutriScoreGraphic(_clickedFoodItem.nutriScore),
             const SizedBox(height: 15,),
             Text(
               '${_clickedFoodItem.price}€' ,

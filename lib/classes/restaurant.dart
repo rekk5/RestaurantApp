@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kandi/classes/food_item.dart';
 import 'package:kandi/classes/menu_item.dart';
+
+// represents a restaurant
 
 class Restaurant {
   String name;

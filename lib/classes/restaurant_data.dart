@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kandi/classes/restaurant.dart';
 
+// restaurant data te be kept in memory at all times to avoid constantly fetching it from firebase
+
 class RestaurantData with ChangeNotifier{
 
   // The list of restaurants 

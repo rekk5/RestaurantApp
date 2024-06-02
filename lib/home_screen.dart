@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kandi/classes/food_item.dart';
 import 'package:kandi/classes/recommendation.dart';
-import 'package:kandi/classes/restaurant.dart';
 import 'package:kandi/restaurant_page.dart';
 import 'gender_metrics_page.dart'; // Import your GenderMetricsPage file here
 import 'feed_back.dart';
+import 'nutriscore_graphic.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,22 +15,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // initial info
-  List<Restaurant> restaurants = [];
-  List<FoodItem> topDishes = [];
-
+  
+  // initialize recommendation
   late Future<Recommendation> _recommendationFuture;
   
   late Recommendation _recommendation;
-
-  // basic colors for boxes displaying food items. Box color associated with food item healthiness
-  List<HSVColor> foodHealthinessColors = [];
-
-  HSVColor red = HSVColor.fromColor(Colors.red);
-  HSVColor orange = HSVColor.fromColor(Colors.orange);
-  HSVColor yellow = HSVColor.fromColor(Colors.yellow);
-  HSVColor green = HSVColor.fromColor(Colors.green);
-  
 
   @override
   void initState() {
@@ -38,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _recommendationFuture = _getInitialInfo();
   }
 
+  // fetches recommendations
   Future<Recommendation> _getInitialInfo() async {
 
     _recommendation = await Recommendation.getRecommendations();
@@ -45,14 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return _recommendation;
   }
 
+  // if true shows logout button if true, changed by clicking user icon
   bool _showLogout = false;
-
+  // if true shows information about recommendations, changed by clicking info icon 
   bool _showRecommendationInfo = false;
-
+  // if true shows information graphic on clicked FoodItem, changed by clicking one of recommendations
   bool _recommendedFoodItemClicked = false;
-
+  // FoodItem to be shown initialized as empty, changed to food item that was clicked
   FoodItem _clickedFoodItem = FoodItem.empty();
 
+  // operation of the sctack based on booleans above
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 height: 35,
                 width: 100,
-                color: Color.fromARGB(255, 88, 88, 88),
+                color: const Color.fromARGB(255, 88, 88, 88),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -98,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         FirebaseAuth.instance.signOut();
                         Navigator.popAndPushNamed(context, '/login');
                       },
-                      icon: Icon(Icons.logout),
+                      icon: const Icon(Icons.logout),
                       color: Colors.white,
                       padding: EdgeInsets.zero,
                     )
@@ -309,9 +301,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               'Fiber ${_clickedFoodItem.fiber.toStringAsFixed(1)}g' 
             ),
+            Text(
+              'Salt ${_clickedFoodItem.salt.toStringAsFixed(1)}mg' 
+            ),
+
             Text('Estiamted portion: ${_clickedFoodItem.weight}g'),
             const SizedBox(height: 20,),
-            FoodItem.getNutriScoreGraphic(_clickedFoodItem.nutriScore),
+            getNutriScoreGraphic(_clickedFoodItem.nutriScore),
             const SizedBox(height: 15,),
             Text(
               '${_clickedFoodItem.price}€' ,

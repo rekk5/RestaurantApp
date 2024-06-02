@@ -116,7 +116,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return RatingBar.builder(
       initialRating: _initialRecommendationsRating,
       allowHalfRating: true,
-      itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber, ),
+      itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber, ),
       onRatingUpdate: (rating){
         
         _firesStoreDB.collection('users').doc(_userId).set({

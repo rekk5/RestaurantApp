@@ -1,3 +1,6 @@
+// MenuItem class represents a dish as it is in a restaurant menu 
+// dishId can be used to get nutritional information from firebase
+
 class MenuItem {
   String name;
   String price;
