@@ -15,6 +15,10 @@ class _LoginPageState extends State<LoginPage> {
   final _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final String userNotFoundText = "No user found for that email.";
+  final String wrongPasswordText = "Wrong password provided for that user.";
+  final String invalidCredentialsText = "Invalid credentials for that user.";
+
   //Login which uses firebase authentication to sign in
   Future<void> _login() async {
     try {
@@ -28,14 +32,24 @@ class _LoginPageState extends State<LoginPage> {
     );
       } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackbar(userNotFoundText));
         print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackbar(wrongPasswordText));
+      } else if (e.code == 'invalid-credential') {
+        print("lol");
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackbar(invalidCredentialsText));
+
       }
     } on PlatformException catch (e){
       print(e.code);
     }
   }
+
+  SnackBar errorSnackbar(String text) => SnackBar(content: Text(text), backgroundColor: Colors.grey);
+
+
   // Scaffold for the login page
   @override
   Widget build(BuildContext context) {

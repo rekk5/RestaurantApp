@@ -83,7 +83,7 @@ class _RestaurantPageState extends State<RestaurantPage>  {
               ],
             ),
           ),
-          const SizedBox(height: 25,),
+          const SizedBox(height: 10,),
           Expanded(
             child: ListView.builder(
               itemCount: _restaurants[_clickedMenuIndex].menuView.length,

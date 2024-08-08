@@ -13,6 +13,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final String weakPasswordText = 'The password provided is too weak.';
+  final String emailUsedText = 'The account already exists for that email.';
+  final String invalidEmailText = 'The email address entered is invalid.';
+
   //Register which uses firebase authentication to sign up
   Future<void> _register() async {
     try {
@@ -26,14 +30,24 @@ class _RegisterPageState extends State<RegisterPage> {
       );
         } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackbar(weakPasswordText));
+        //print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackbar(emailUsedText));
+        //print('The account already exists for that email.');
+      }
+      else if (e.code == 'invalid-email'){
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackbar(invalidEmailText));
+        
       }
     } catch (e) {
       print(e);
+      print("CODE");
     }
   }
+
+  SnackBar errorSnackbar(String text) => SnackBar(content: Text(text), backgroundColor: Colors.grey);
+  
   // Scaffold for the register page
   @override
   Widget build(BuildContext context) {
@@ -49,6 +63,13 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const Text(
+              "Create your Dish4u account",
+              style: TextStyle(
+                fontSize: 20,
+              ),
+              ),
+              SizedBox(height: 40,),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),

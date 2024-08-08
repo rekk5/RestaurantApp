@@ -28,9 +28,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
   String _feedback = '';
 // Save _feedback to Firebase Realtime Database
     void saveFeedback() {
+      if (_feedback != ''){
     _databaseReference.child('_feedback').push().set({
       'feedback': _feedback,
-    });
+    });}
   }
   double _initialRecommendationsRating = 0;
 
