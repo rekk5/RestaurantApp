@@ -282,8 +282,11 @@ class _RestaurantPageState extends State<RestaurantPage>  {
         ),
         child: Column(
           children: [
-            Text(
-              _restaurants[index].topDishes[menuIndex].name
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                _restaurants[index].topDishes[menuIndex].name
+              ),
             ),
             Text(
               'Price ${_restaurants[index].topDishes[menuIndex].price}€' 
