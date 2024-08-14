@@ -113,7 +113,12 @@ class _RestaurantPageState extends State<RestaurantPage>  {
         margin: const EdgeInsets.all(8),
         height: 100,
         width: 200,
-        color: Colors.red,
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 203, 160, 224).withOpacity(0.7),
+          border: Border.all(
+            color: Colors.black
+          )
+        ),
         child: Column(
           children: [
             Text(
