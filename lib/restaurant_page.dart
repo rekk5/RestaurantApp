@@ -154,7 +154,14 @@ class _RestaurantPageState extends State<RestaurantPage>  {
       alignment: Alignment.topLeft,
       height: 170,
       margin: const EdgeInsets.all(8),
-      color: Colors.green,
+      //color: Colors.green,
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 229, 225, 231).withOpacity(0.8),
+        
+        border: Border.all(
+          color: Color.fromARGB(255, 96, 11, 138),
+        )
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -261,7 +268,13 @@ class _RestaurantPageState extends State<RestaurantPage>  {
         margin: const EdgeInsets.all(8),
         height: 100,
         width: 200,
-        color: Colors.red,
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 203, 160, 224),
+          borderRadius: BorderRadius.circular(15.0),
+          border: Border.all(
+            color: Colors.black
+          ),
+        ),
         child: Column(
           children: [
             Text(
