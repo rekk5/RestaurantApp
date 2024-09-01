@@ -114,7 +114,7 @@ class _RestaurantPageState extends State<RestaurantPage>  {
         height: 100,
         width: 200,
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 203, 160, 224).withOpacity(0.7),
+          color: const Color.fromARGB(255, 203, 160, 224).withOpacity(0.7),
           border: Border.all(
             color: Colors.black
           )
@@ -161,10 +161,10 @@ class _RestaurantPageState extends State<RestaurantPage>  {
       margin: const EdgeInsets.all(8),
       //color: Colors.green,
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 229, 225, 231).withOpacity(0.8),
+        color: const Color.fromARGB(255, 229, 225, 231).withOpacity(0.8),
         
         border: Border.all(
-          color: Color.fromARGB(255, 96, 11, 138),
+          color: const Color.fromARGB(255, 96, 11, 138),
         )
       ),
       child: Padding(
@@ -274,7 +274,7 @@ class _RestaurantPageState extends State<RestaurantPage>  {
         height: 100,
         width: 200,
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 203, 160, 224),
+          color: const Color.fromARGB(255, 203, 160, 224),
           borderRadius: BorderRadius.circular(15.0),
           border: Border.all(
             color: Colors.black
